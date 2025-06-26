@@ -106,6 +106,19 @@ const OpdPatients = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "OpdPatients");
     XLSX.writeFile(workbook, "OPD_Patients_List.xlsx");
   };
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   return (
     <div>
@@ -251,9 +264,12 @@ const OpdPatients = () => {
                     </div>
                   </td>
                   <td>
+                    
                     <span className="badges bg-light-info">
-                      {new Date(opd.visitDate).toLocaleString()}
+                      {formatTime(opd.visitDate)} <br />
+                      {formatDate(opd.visitDate)}
                     </span>
+                 
                   </td>
 
                   <td>

@@ -5,7 +5,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import * as XLSX from "xlsx";
@@ -60,8 +59,6 @@ const IpdPatients = () => {
     }
   };
 
-
-
   const handleEdit = (ipd) => {
     navigate(`/ipd-patients/${ipd.id}/edit`);
   };
@@ -111,7 +108,19 @@ const IpdPatients = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "IpdPatients");
     XLSX.writeFile(workbook, "IPD_Patients_List.xlsx");
   };
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
   return (
     <div>
       <ToastContainer />
@@ -256,7 +265,8 @@ const IpdPatients = () => {
                   </td>
                   <td>
                     <span className="badges bg-light-info">
-                      {new Date(ipd.admissionDate).toLocaleString()}
+                      {formatTime(ipd.admissionDate)} <br />
+                      {formatDate(ipd.admissionDate)}
                     </span>
                   </td>
 
@@ -265,7 +275,6 @@ const IpdPatients = () => {
                       className="d-flex justify-center items-center"
                       style={{ justifyContent: "center" }}
                     >
-                    
                       <button className="btn" onClick={() => handleEdit(ipd)}>
                         <i className="text-primary fa fa-edit fa-lg" />
                       </button>

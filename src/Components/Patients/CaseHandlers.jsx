@@ -157,9 +157,22 @@ const CaseHandlers = () => {
     <div>
       <ToastContainer />
       <div className="doctor-nav-buttons">
-        <CommonNav />
+        <div className="nav_headings">
+          <Link to="/patients" className="doctor-nav-btn">
+            <span className="btn-text">Patients</span>
+          </Link>
+          <Link to="/cases" className="doctor-nav-btn">
+            <span className="btn-text">Cases</span>
+          </Link>
+          <Link to="/case-handlers" className="doctor-nav-btn active">
+            <span className="btn-text">Case Handlers</span>
+          </Link>
+          <Link to="/patient-admissions" className="doctor-nav-btn ">
+            <span className="btn-text">Patient Admissions</span>
+          </Link>
+        </div>
       </div>
-      
+
       <div
         className="filter-bar-container"
         style={{ display: "flex", alignItems: "center", gap: "10px" }}

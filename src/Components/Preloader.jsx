@@ -3,17 +3,17 @@ import React from "react";
 const Preloader = () => {
   return (
     <>
-      <div class="absCenter ">
-        <div class="loaderPill">
-          <div class="loaderPill-anim">
-            <div class="loaderPill-anim-bounce">
-              <div class="loaderPill-anim-flop">
-                <div class="loaderPill-pill"></div>
+      <div className="absCenter ">
+        <div className="loaderPill">
+          <div className="loaderPill-anim">
+            <div className="loaderPill-anim-bounce">
+              <div className="loaderPill-anim-flop">
+                <div className="loaderPill-pill"></div>
               </div>
             </div>
           </div>
-          <div class="loaderPill-floor">
-            <div class="loaderPill-floor-shadow"></div>
+          <div className="loaderPill-floor">
+            <div className="loaderPill-floor-shadow"></div>
           </div>
 
           <style>

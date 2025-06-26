@@ -29,9 +29,9 @@ const BirthReports = () => {
       const res = await axios.get(`${baseurl}/api/birthReports`);
       setReports(res.data);
     } catch (error) {
-      console.error("Error fetching operation reports:", error);
+      console.error("Error fetching birth reports:", error);
       toast.error(
-        "Failed to load operation reports: " +
+        "Failed to load birth reports: " +
           (error.response?.data?.error || error.message)
       );
     }

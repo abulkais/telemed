@@ -44,7 +44,7 @@ const VaccinatedPatients = () => {
 
   const fetchVaccinations = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/vaccinations`);
+      const res = await axios.get(`http://localhost:8080/api/vaccinationsbyStatus`);
       console.log("Vaccinations fetched:", res.data);
       setVaccinations(res.data);
     } catch (error) {

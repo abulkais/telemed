@@ -62,59 +62,59 @@ const ViewOpdPatient = () => {
           <div className="card p-4 border-0">
             <div className="row">
               <div className="col-md-6">
-                <label className="fs-5 text-gray-600">OPD No:</label>
+                <label className="fs-5 text-gray-600">OPD No</label>
                 <p className="fs-5 text-gray-800 showSpan">{opd.opdNo}</p>
-                <label className="fs-5 text-gray-600">Patient:</label>
+                <label className="fs-5 text-gray-600">Patient</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.patient?.firstName} {opd.patient?.lastName}
                 </p>
-                <label className="fs-5 text-gray-600">Case ID:</label>
+                <label className="fs-5 text-gray-600">Case ID</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.caseId || "N/A"}
                 </p>
-                <label className="fs-5 text-gray-600">Height:</label>
+                <label className="fs-5 text-gray-600">Height</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.height || "N/A"}
                 </p>
-                <label className="fs-5 text-gray-600">Weight:</label>
+                <label className="fs-5 text-gray-600">Weight</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.weight || "N/A"}
                 </p>
-                <label className="fs-5 text-gray-600">Blood Pressure:</label>
+                <label className="fs-5 text-gray-600">Blood Pressure</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.bloodPressure || "N/A"}
                 </p>
-                <label className="fs-5 text-gray-600">Appointment Date:</label>
+                <label className="fs-5 text-gray-600">Appointment Date</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {new Date(opd.visitDate).toLocaleString()}
                 </p>
-                <label className="fs-5 text-gray-600">Created on:</label>
+                <label className="fs-5 text-gray-600">Created on</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {getTimeAgo(opd.created_at)}
                 </p>
               </div>
               <div className="col-md-6">
-                <label className="fs-5 text-gray-600">Doctor:</label>
+                <label className="fs-5 text-gray-600">Doctor</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.doctor?.firstName} {opd.doctor?.lastName}
                 </p>
-                <label className="fs-5 text-gray-600">Standard Charge:</label>
+                <label className="fs-5 text-gray-600">Standard Charge</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.standardCharge || "N/A"}
                 </p>
-                <label className="fs-5 text-gray-600">Payment Mode:</label>
+                <label className="fs-5 text-gray-600">Payment Mode</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.paymentMode || "N/A"}
                 </p>
-                <label className="fs-5 text-gray-600">Symptoms:</label>
+                <label className="fs-5 text-gray-600">Symptoms</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.symptoms || "N/A"}
                 </p>
-                <label className="fs-5 text-gray-600">Notes:</label>
+                <label className="fs-5 text-gray-600">Notes</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {opd.notes || "N/A"}
                 </p>
-                <label className="fs-5 text-gray-600">Updated on:</label>
+                <label className="fs-5 text-gray-600">Updated on</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   {getTimeAgo(opd.updated_at)}
                 </p>
