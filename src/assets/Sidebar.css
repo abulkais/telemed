@@ -1,0 +1,136 @@
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  padding: 20px 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+}
+
+.sidebar.collapsed {
+  width: 90px;
+}
+
+.sidebar-header {
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header .logo {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  padding: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.search-box {
+  padding: 15px;
+  position: relative;
+}
+
+.search-box .form-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding-left: 35px;
+}
+
+.search-box .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.search-icon {
+  margin: 2px 0 0 10px;
+  position: absolute;
+  left: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.nav {
+  padding: 15px 0;
+}
+
+.nav-item {
+  margin: 5px 0;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  margin: 0 10px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  text-decoration: none;
+}
+
+.nav-link .icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.sidebar.collapsed .nav-link .icon {
+  margin-right: 0;
+}
+
+.sidebar.collapsed .nav-link {
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 70px;
+  }
+
+  .sidebar:not(.collapsed) {
+    width: 250px;
+    z-index: 1100;
+  }
+
+  .sidebar-header h3,
+  .sidebar .nav-link span {
+    display: none;
+  }
+
+  .sidebar:not(.collapsed) .sidebar-header h3,
+  .sidebar:not(.collapsed) .nav-link span {
+    display: inline;
+  }
+
+  .search-box {
+    display: none;
+  }
+
+  .sidebar:not(.collapsed) .search-box {
+    display: block;
+  }
+}

@@ -1,0 +1,52 @@
+.delete_modal,
+.smartCard_modal {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 10000;
+}
+
+.delete_modal h2 {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+
+.delete_modal img {
+  width: 62px;
+  height: 80px;
+  margin: 0 auto;
+  display: block;
+}
+.delete_modal .modal-content {
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+.delete_modal .modal-dialog {
+  width: 350px;
+}
+
+/*  */
+.add_edit_patients {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+}
+
+.add_edit_patients .modal-dialog {
+  max-width: 800px;
+  width: 100%;
+}
