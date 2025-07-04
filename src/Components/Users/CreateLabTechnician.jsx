@@ -498,7 +498,7 @@ const CreateLabTechnician = () => {
                         {technicianData.firstName && technicianData.lastName ? (
                           `${technicianData.firstName[0]}${technicianData.lastName[0]}`
                         ) : (
-                          <i className="fa fa-upload"></i>
+                          <i className="fa fa-pencil"></i>
                         )}
                       </div>
                     )}

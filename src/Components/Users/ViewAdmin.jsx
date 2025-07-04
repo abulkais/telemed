@@ -85,7 +85,7 @@ const ViewAdmin = () => {
               <div className="col-md-4 mb-3">
                 <strong>Status:</strong>{" "}
                 <span
-                  className={`badges ${
+                  className={`badge ${
                     admin.status === "Active" ? "badge-success" : "badge-danger"
                   }`}
                 >

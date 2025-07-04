@@ -323,7 +323,7 @@ const Accountants = () => {
                   <td>{accountant.designation}</td>
                   <td>
                     <span
-                      className={`badges ${
+                      className={`badge ${
                         accountant.status === "Active"
                           ? "bg-light-success"
                           : "bg-light-danger"

@@ -34,7 +34,7 @@ const ViewIpdPatient = () => {
   const handleEdit = (ipd) => {
     navigate(`/ipd-patients/${ipd.id}/edit`);
   };
-
+  
   if (!ipd) return <Preloader />;
 
   return (
@@ -116,7 +116,7 @@ const ViewIpdPatient = () => {
                 <label className="fs-5 text-gray-600">Is Old Patient:</label>
                 <p className="fs-5 text-gray-800 showSpan">
                   <span
-                    className={`badges ${
+                    className={`badge ${
                       ipd.isOldPatient ? "bg-light-success" : "bg-light-danger"
                     }`}
                   >

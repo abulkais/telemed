@@ -299,7 +299,7 @@ const Insurances = () => {
                   <td>${parseFloat(item.total || 0).toFixed(2)}</td>
                   <td>
                     <span
-                      className={`badges ${
+                      className={`badge ${
                         item.status ? "bg-light-success" : "bg-light-danger"
                       }`}
                     >

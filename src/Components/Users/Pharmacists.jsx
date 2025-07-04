@@ -328,7 +328,7 @@ const Pharmacists = () => {
 
                   <td>
                     <span
-                      className={`badges ${
+                      className={`badge ${
                         pharmacist.status === "Active"
                           ? "bg-light-success"
                           : "bg-light-danger"

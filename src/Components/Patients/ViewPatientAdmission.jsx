@@ -5,13 +5,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import Preloader from "../preloader";
-import moment from "moment";
 
 const ViewPatientAdmission = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [admission, setAdmission] = useState(null);
-  const baseUrl = "http://localhost:8080";
 
   const fetchAdmission = async () => {
     try {
@@ -29,28 +27,10 @@ const ViewPatientAdmission = () => {
     fetchAdmission();
   }, [id]);
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const getTimeAgo = (date) => {
-    return moment(date).fromNow();
-  };
-
   if (!admission) return <Preloader />;
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid patients_view">
       <ToastContainer />
       <div className="row">
         <div className="col-lg-12">
@@ -64,118 +44,83 @@ const ViewPatientAdmission = () => {
             </button>
           </div>
 
-          <div className="card p-4 border-0 mb-4">
-            <div className="d-flex align-items-center">
-              <div className="profile-picture-container ">
-                {admission.patientProfileImage ? (
-                  <img
-                    src={`${baseUrl}${admission.patientProfileImage}`}
-                    alt={`${admission.firstName} ${admission.lastName}`}
-                    className="profile-picture"
-                  />
-                ) : (
-                  <div className="empty-profile text-white d-flex align-items-center justify-content-center">
-                    {admission.patient?.firstName?.charAt(0)?.toUpperCase() ||
-                      ""}
-                    {admission.patient?.lastName?.charAt(0)?.toUpperCase() ||
-                      ""}
-                  </div>
-                )}
-              </div>
-              <div className="ml-3">
-                <h5 className="mb-0">
-                  {admission.patient?.firstName} {admission.patient?.lastName}
-                </h5>
-                <p className="text-muted mb-0">{admission.patient?.email}</p>
-              </div>
-            </div>
-          </div>
-
           <div className="card p-4 border-0">
             <div className="row">
               <div className="col-md-6">
-                <label class="fs-5 text-gray-600">Admission ID:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+                <label class=" text-gray-600">Admission ID:</label>
+                <p className=" text-gray-800 showSpan">
                   <span className="badges bg-light-success">
                     {admission.admissionID}
                   </span>
                 </p>
-
-                <label class="fs-5 text-gray-600">Doctor:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+                <label class=" text-gray-600">Patient:</label>
+                <p className=" text-gray-800 showSpan">
+                  {admission.patient?.firstName} {admission.patient?.lastName}
+                </p>
+                <label class=" text-gray-600">Doctor:</label>
+                <p className=" text-gray-800 showSpan">
                   {admission.doctor?.firstName} {admission.doctor?.lastName}
                 </p>
-                <label class="fs-5 text-gray-600">Admission Date:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+                <label class=" text-gray-600">Admission Date:</label>
+                <p className=" text-gray-800 showSpan">
                   <span className="badges bg-light-info">
-                    {formatDate(admission.admissionDate)}{" "}
-                    {formatTime(admission.admissionDate)}
+                    {" "}
+                    {new Date(admission.admissionDate).toLocaleString()}
                   </span>
                 </p>
-                <label class="fs-5 text-gray-600">Discharge Date:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+                <label class=" text-gray-600">Discharge Date:</label>
+                <p className=" text-gray-800 showSpan">
                   {admission.dischargeDate
                     ? new Date(admission.dischargeDate).toLocaleString()
                     : "N/A"}
                 </p>
-                <label class="fs-5 text-gray-600">Package:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+                <label class=" text-gray-600">Package:</label>
+                <p className=" text-gray-800 showSpan">
                   {admission.package?.packageName || "N/A"}
                 </p>
-                <label class="fs-5 text-gray-600">Insurance:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+                <label class=" text-gray-600">Insurance:</label>
+                <p className=" text-gray-800 showSpan">
                   {admission.insurance?.insuranceName || "N/A"}
                 </p>
-
-                <label class="fs-5 text-gray-600">Status:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+              </div>
+              <div className="col-md-6">
+                <label class=" text-gray-600">Bed:</label>
+                <p className=" text-gray-800 showSpan">
+                  {admission.bed?.name || "N/A"}
+                </p>
+                <label class=" text-gray-600">Policy No:</label>
+                <p className=" text-gray-800 showSpan">
+                  {admission.policyNo || "N/A"}
+                </p>
+                <label class=" text-gray-600">Agent Name:</label>
+                <p className=" text-gray-800 showSpan">
+                  {admission.agentName || "N/A"}
+                </p>
+                <label class=" text-gray-600">Guardian Name:</label>
+                <p className=" text-gray-800 showSpan">
+                  {admission.guardianName || "N/A"}
+                </p>
+                <label class=" text-gray-600">Guardian Relation:</label>
+                <p className=" text-gray-800 showSpan">
+                  {admission.guardianRelation || "N/A"}
+                </p>
+                <label class=" text-gray-600">Guardian Contact:</label>
+                <p className=" text-gray-800 showSpan">
+                  {admission.countryCode} {admission.guardianContact || "N/A"}
+                </p>
+                <label class=" text-gray-600">Guardian Address:</label>
+                <p className=" text-gray-800 showSpan">
+                  {admission.guardianAddress || "N/A"}
+                </p>
+                <label class=" text-gray-600">Status:</label>
+                <p className=" text-gray-800 showSpan">
                   <span
-                    className={`badges ${
+                    className={`badge ${
                       admission.status ? "bg-light-success" : "bg-light-danger"
                     }`}
                   >
                     {admission.status ? "Active" : "Inactive"}
                   </span>
-                </p>
-
-                <label class="fs-5 text-gray-600">Created At:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {getTimeAgo(admission.created_at)}
-                </p>
-              </div>
-              <div className="col-md-6">
-                <label class="fs-5 text-gray-600">Bed:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {admission.bed?.name || "N/A"}
-                </p>
-                <label class="fs-5 text-gray-600">Policy No:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {admission.policyNo || "N/A"}
-                </p>
-                <label class="fs-5 text-gray-600">Agent Name:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {admission.agentName || "N/A"}
-                </p>
-                <label class="fs-5 text-gray-600">Guardian Name:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {admission.guardianName || "N/A"}
-                </p>
-                <label class="fs-5 text-gray-600">Guardian Relation:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {admission.guardianRelation || "N/A"}
-                </p>
-                <label class="fs-5 text-gray-600">Guardian Contact:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {admission.countryCode} {admission.guardianContact || "N/A"}
-                </p>
-                <label class="fs-5 text-gray-600">Guardian Address:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {admission.guardianAddress || "N/A"}
-                </p>
-
-                <label class="fs-5 text-gray-600">Updated At:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {getTimeAgo(admission.updated_at)}
                 </p>
               </div>
             </div>

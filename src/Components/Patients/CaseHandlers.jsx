@@ -6,10 +6,12 @@ import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import * as XLSX from "xlsx";
 import removeIcon from "../../assets/images/remove.png";
 import Preloader from "../preloader";
-import Pagination from "../Pagination";
+import CommonNav from "../CommonNav";
 
 const CaseHandlers = () => {
   const [caseHandlers, setCaseHandlers] = useState([]);
@@ -20,9 +22,8 @@ const CaseHandlers = () => {
   const navigate = useNavigate();
   const filterRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10
+  const [itemsPerPage] = useState(10);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const fetchCaseHandlers = async () => {
     try {
@@ -35,8 +36,6 @@ const CaseHandlers = () => {
     } catch (error) {
       console.error("Error fetching case handlers:", error);
       toast.error("Failed to load case handlers");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -91,8 +90,8 @@ const CaseHandlers = () => {
   const filterCaseHandlers = (handler) => {
     const matchesSearch = searchQuery
       ? handler.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      handler.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      handler.email?.toLowerCase().includes(searchQuery.toLowerCase())
+        handler.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        handler.email?.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
 
     const matchesStatus =
@@ -182,7 +181,7 @@ const CaseHandlers = () => {
           <input
             type="text"
             className="form-control"
-            placeholder="Search"
+            placeholder="Search by Name or Email"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -261,20 +260,14 @@ const CaseHandlers = () => {
               <th>Case Handlers</th>
               <th>Designation</th>
               <th>Phone</th>
-
+              <th>Gender</th>
               <th>Status</th>
-
+              <th>Blood Group</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7">
-                  <Preloader />
-                </td>
-              </tr>
-            ) : currentItems.length > 0 ? (
+            {currentItems.length > 0 ? (
               currentItems.map((handler, index) => (
                 <tr key={handler.id}>
                   <td>{indexOfFirstItem + index + 1}</td>
@@ -284,10 +277,25 @@ const CaseHandlers = () => {
                         <img
                           src={handler.profileImage}
                           alt={`${handler.firstName} ${handler.lastName}`}
-                          className="rounded-circle-profile"
+                          className="rounded-circle"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            marginRight: "10px",
+                          }}
                         />
                       ) : (
-                        <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
+                        <div
+                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            backgroundColor: "#1976d2",
+                            marginRight: "10px",
+                            fontSize: "20px",
+                          }}
+                        >
                           {handler.firstName?.charAt(0)?.toUpperCase() || ""}
                           {handler.lastName?.charAt(0)?.toUpperCase() || ""}
                         </div>
@@ -301,18 +309,20 @@ const CaseHandlers = () => {
                     </div>
                   </td>
                   <td>{handler.designation || "N/A"}</td>
-                  <td>{`${handler.phoneCountryCode || "+62"} ${handler.phoneNumber
-                    }`}</td>
-
+                  <td>{`${handler.phoneCountryCode || "+62"} ${
+                    handler.phoneNumber
+                  }`}</td>
+                  <td>{handler.gender}</td>
                   <td>
                     <span
-                      className={`badges ${handler.status ? "bg-light-success" : "bg-light-danger"
-                        }`}
+                      className={`badge ${
+                        handler.status ? "bg-light-success" : "bg-light-danger"
+                      }`}
                     >
                       {handler.status ? "Active" : "Inactive"}
                     </span>
                   </td>
-
+                  <td>{handler.bloodGroup || "N/A"}</td>
                   <td>
                     <div
                       className="d-flex justify-center items-center"
@@ -345,20 +355,140 @@ const CaseHandlers = () => {
             ) : (
               <tr>
                 <td colSpan="8">
-                  <p className="text-center">no data found</p>
+                  <Preloader />
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+
+        <div className="d-flex justify-content-between align-items-center mt-5">
+          <div>
+            Showing {indexOfFirstItem + 1} to{" "}
+            {Math.min(indexOfLastItem, filteredCaseHandlers.length)} of{" "}
+            {filteredCaseHandlers.length} results
+          </div>
+          <nav>
+            <ul className="pagination">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  <ArrowBackIosIcon />
+                </button>
+              </li>
+              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(1)}
+                  style={{
+                    height: "42px",
+                    borderRadius: "10px",
+                    boxShadow: "none",
+                    border: "none",
+                  }}
+                >
+                  1
+                </button>
+              </li>
+              {currentPage > 4 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (number) =>
+                    number > 1 &&
+                    number < totalPages &&
+                    Math.abs(number - currentPage) <= 2
+                )
+                .map((number) => (
+                  <li
+                    key={number}
+                    className={`page-item ${
+                      currentPage === number ? "active" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage(number)}
+                      style={{
+                        height: "42px",
+                        borderRadius: "10px",
+                        boxShadow: "none",
+                        border: "none",
+                      }}
+                    >
+                      {number}
+                    </button>
+                  </li>
+                ))}
+              {currentPage < totalPages - 3 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {totalPages > 1 && (
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(totalPages)}
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    {totalPages}
+                  </button>
+                </li>
+              )}
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  <ArrowForwardIosIcon />
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
+
       <div
         className="modal fade"
         id="deleteCaseHandler"

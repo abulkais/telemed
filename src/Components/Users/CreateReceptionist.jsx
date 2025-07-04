@@ -498,7 +498,7 @@ const CreateReceptionist = () => {
                         {receptionistData.firstName && receptionistData.lastName ? (
                           `${receptionistData.firstName[0]}${receptionistData.lastName[0]}`
                         ) : (
-                          <i className="fa fa-upload"></i>
+                          <i className="fa fa-pencil"></i>
                         )}
                       </div>
                     )}

@@ -11,8 +11,6 @@ import { Link } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Switch from "@mui/material/Switch";
-import delteImage from "../../assets/images/remove.png"
-
 
 const medicinesCategories = () => {
   const [categoriesData, setCategoriesData] = useState([]);
@@ -425,7 +423,7 @@ const medicinesCategories = () => {
                 </td>
                 <td>
                   <span
-                    className={`badges ${
+                    className={`badge ${
                       cat.status === "Active"
                         ? "bg-light-success"
                         : "bg-light-danger"
@@ -709,7 +707,7 @@ const medicinesCategories = () => {
           <div className="modal-content text-center">
             <span className="modal-icon">
               <img
-                src={delteImage}
+                src="https://hms.infyom.com/assets/images/remove.png"
                 alt=""
               />
             </span>

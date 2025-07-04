@@ -147,7 +147,7 @@ const ViewInsurances = () => {
                 <p className="fs-5 text-gray-800">
                   {" "}
                   <span
-                    className={`badges ${
+                    className={`badge ${
                         insuranceData.status ? "bg-light-success" : "bg-light-danger"
                     }`}
                   >

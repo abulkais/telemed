@@ -6,9 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Select from "react-select";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
-import Pagination from "../Pagination";
-import Preloader from "../preloader";
-
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const VaccinatedPatients = () => {
   const [vaccinatedPatients, setVaccinatedPatients] = useState([]);
@@ -26,7 +25,7 @@ const VaccinatedPatients = () => {
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const [excelLoading, setExcelLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -34,7 +33,7 @@ const VaccinatedPatients = () => {
   const fetchPatients = async () => {
     try {
       const res = await axios.get(`http://localhost:8080/api/patients`);
-      // console.log("Patients fetched:", res.data[0].profileImage);
+      console.log("Patients fetched:", res.data[0].profileImage);
       setPatients(res.data);
       // console.log("Patients:", res.data.);
     } catch (error) {
@@ -46,10 +45,10 @@ const VaccinatedPatients = () => {
   const fetchVaccinations = async () => {
     try {
       const res = await axios.get(`http://localhost:8080/api/vaccinationsbyStatus`);
-      // console.log("Vaccinations fetched:", res.data);
+      console.log("Vaccinations fetched:", res.data);
       setVaccinations(res.data);
     } catch (error) {
-      // console.error("Error fetching Vaccinations:", error);
+      console.error("Error fetching Vaccinations:", error);
       toast.error("Failed to load Vaccinations");
     }
   };
@@ -57,17 +56,15 @@ const VaccinatedPatients = () => {
   const fetchVaccinatedPatients = async () => {
     try {
       const res = await axios.get(`http://localhost:8080/api/vaccinatedPatients`);
-      // console.log("Vaccinated Patients fetched:", res.data);
+      console.log("Vaccinated Patients fetched:", res.data);
       const sortedData = res.data.sort(
         (a, b) => new Date(b.createdDateTime) - new Date(a.createdDateTime)
       );
       setVaccinatedPatients(sortedData);
       setCurrentPage(1);
     } catch (error) {
-      // console.error("Error fetching Vaccinated Patients:", error);
+      console.error("Error fetching Vaccinated Patients:", error);
       toast.error("Failed to load Vaccinated Patients");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -136,7 +133,7 @@ const VaccinatedPatients = () => {
       return false;
     }
 
-
+ 
     if (!vaccinatedPatient.serialNo) {
       toast.error("Serial No is required");
       return false;
@@ -172,16 +169,16 @@ const VaccinatedPatients = () => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+  
     const currentDate = new Date().toISOString().slice(0, 19).replace("T", " ");
     const newId = String(vaccinatedPatients.length + 1).padStart(2, "0");
-
+  
     const newVaccinatedPatient = {
       ...vaccinatedPatient,
       id: newId,
       createdDateTime: currentDate,
     };
-
+  
     try {
       if (editing) {
         await axios.put(
@@ -355,9 +352,9 @@ const VaccinatedPatients = () => {
       <div className="doctor-nav-buttons">
         <div className="nav_headings">
           <Link
-            to="/vaccinated-patients"
+            to="/vaccinatedPatients"
             className={`doctor-nav-btn active`}
-            onClick={() => { }}
+            onClick={() => {}}
           >
             <span className="btn-text">Vaccinated Patients</span>
           </Link>
@@ -365,7 +362,7 @@ const VaccinatedPatients = () => {
           <Link
             to="/vaccinations"
             className={`doctor-nav-btn`}
-            onClick={() => { }}
+            onClick={() => {}}
           >
             <span className="btn-text">Vaccinations</span>
           </Link>
@@ -377,7 +374,7 @@ const VaccinatedPatients = () => {
           <input
             type="text"
             className="form-control"
-            placeholder="Search"
+            placeholder="Search Vaccinated Patients"
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
@@ -417,57 +414,65 @@ const VaccinatedPatients = () => {
       </div>
 
       <div className="custom-table-responsive">
-
-        <table className="table custom-table-striped custom-table table-hover text-center">
-          <thead className="thead-light">
-            <tr>
-              <th>S.N</th>
-              <th>Patient</th>
-              <th>Vaccination</th>
-              <th>Serial No</th>
-              <th>Dose No</th>
-              <th>Dose Given Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <table className="table custom-table-striped custom-table table-hover text-center">
+            <thead className="thead-light">
               <tr>
-                <td colSpan="7">
-                  <Preloader />
-                </td>
+                <th>S.N</th>
+                <th>Patient</th>
+                <th>Vaccination</th>
+                <th>Serial No</th>
+                <th>Dose No</th>
+                <th>Dose Given Date</th>
+                <th>Action</th>
               </tr>
-            ) : currentItems.length > 0 ? (
-              currentItems.map((item, index) => {
+            </thead>
+            <tbody>
+              {currentItems.map((item, index) => {
                 const patient = getPatientById(item.patientId);
                 const vaccination = getVaccinationById(item.vaccinationId);
                 return (
                   <tr key={item.id}>
                     <td>{index + 1}</td>
                     <td>
-                      <div className="d-flex align-items-center">
-                        {patient.profileImage ? (
-                          <img
-                            src={patient.profileImage}
-                            alt={`${patient.firstName} ${patient.lastName}`}
-                            className="rounded-circle-profile"
-                          />
-                        ) : (
-                          <div
-                            className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center"
-                          >
-                            {patient.firstName?.charAt(0)?.toUpperCase() || ""}
-                            {patient.lastName?.charAt(0)?.toUpperCase() || ""}
-                          </div>
-                        )}
-                        <div className="flex-wrap">
-                          <p className="mb-0" style={{ textAlign: "start" }}>
-                            {patient.firstName} {patient.lastName}
-                          </p>
-                          <p className="mb-0">{patient.email}</p>
+                    <div className="d-flex align-items-center">
+                      {patient.profileImage ? (
+                        <img
+                          src={patient.profileImage}
+                          alt={`${patient.firstName} ${patient.lastName}`}
+                          className="rounded-circle"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            marginRight: "10px",
+                          }}
+                        />
+                      ) : (
+                        <div
+                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            backgroundColor: "#1976d2",
+                            marginRight: "10px",
+                            fontSize: "20px",
+                          }}
+                        >
+                          {patient.firstName?.charAt(0)?.toUpperCase() || ""}
+                          {patient.lastName?.charAt(0)?.toUpperCase() || ""}
                         </div>
+                      )}
+                      <div className="flex-wrap">
+                        <p className="mb-0" style={{ textAlign: "start" }}>
+                          {patient.firstName} {patient.lastName}
+                        </p>
+                        <p className="mb-0">{patient.email}</p>
                       </div>
-                    </td>
+                    </div>
+                  </td>
                     <td>{vaccination?.name || "N/A"}</td>
                     <td>
                       <span className="badges bg-light-success">
@@ -502,25 +507,138 @@ const VaccinatedPatients = () => {
                     </td>
                   </tr>
                 );
-              })
-            ) : (
-              <tr>
-                <td colSpan="7">
-                  <p className="">No data found.</p>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              })}
+            </tbody>
+          </table>
+        )}
 
+        <div className="d-flex justify-content-between align-items-center mt-5">
+          <div>
+            Showing {indexOfFirstItem + 1} to{" "}
+            {Math.min(indexOfLastItem, filteredVaccinatedPatients.length)} of{" "}
+            {filteredVaccinatedPatients.length} results
+          </div>
+          <nav>
+            <ul className="pagination">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  <ArrowBackIosIcon />
+                </button>
+              </li>
+              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(1)}
+                  style={{
+                    height: "42px",
+                    borderRadius: "10px",
+                    boxShadow: "none",
+                    border: "none",
+                  }}
+                >
+                  1
+                </button>
+              </li>
+              {currentPage > 4 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (number) =>
+                    number > 1 &&
+                    number < totalPages &&
+                    Math.abs(number - currentPage) <= 2
+                )
+                .map((number) => (
+                  <li
+                    key={number}
+                    className={`page-item ${
+                      currentPage === number ? "active" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage(number)}
+                      style={{
+                        height: "42px",
+                        borderRadius: "10px",
+                        boxShadow: "none",
+                        border: "none",
+                      }}
+                    >
+                      {number}
+                    </button>
+                  </li>
+                ))}
+              {currentPage < totalPages - 3 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {totalPages > 1 && (
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(totalPages)}
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    {totalPages}
+                  </button>
+                </li>
+              )}
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  <ArrowForwardIosIcon />
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
+
       <div
         className="modal fade document_modal"
         id="addVaccinatedPatient"

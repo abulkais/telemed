@@ -5,10 +5,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import * as XLSX from "xlsx";
 import removeIcon from "../../assets/images/remove.png";
 import Preloader from "../preloader";
-import Pagination from "../Pagination";
 
 const PatientAdmissions = () => {
   const [admissions, setAdmissions] = useState([]);
@@ -20,9 +21,8 @@ const PatientAdmissions = () => {
   const filterRef = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10
+  const [itemsPerPage] = useState(10);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const fetchAdmissions = async () => {
     try {
@@ -37,8 +37,6 @@ const PatientAdmissions = () => {
     } catch (error) {
       console.error("Error fetching admissions:", error);
       toast.error("Failed to load admissions");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -95,20 +93,20 @@ const PatientAdmissions = () => {
   const filterAdmissions = (admission) => {
     const matchesSearch = searchQuery
       ? admission.admissionID
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      admission.patient?.firstName
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      admission.patient?.lastName
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      admission.doctor?.firstName
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      admission.doctor?.lastName
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase())
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        admission.patient?.firstName
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        admission.patient?.lastName
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        admission.doctor?.firstName
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        admission.doctor?.lastName
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase())
       : true;
 
     const matchesStatus =
@@ -287,30 +285,29 @@ const PatientAdmissions = () => {
               <th>Doctor</th>
               <th>Admission Date</th>
               <th>Discharge Date</th>
-
+              <th>Package</th>
+              <th>Insurance</th>
+              <th>Policy No</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7">
-                  <Preloader />
-                </td>
-              </tr>
-            ) : currentItems.length > 0 ? (
+            {currentItems.length > 0 ? (
               currentItems.map((admission) => (
                 <tr key={admission.id}>
                   <td>
+                    {" "}
                     <span
                       className="badges bg-light-success"
                       style={{ cursor: "pointer" }}
                     >
+                      {" "}
                       <strong onClick={() => handleView(admission)}>
-                        {admission.admissionID}
-                        <i className="fa fa-eye ml-1"></i>
-                      </strong>
+                        {" "}
+                        {admission.admissionID}{" "}
+                        <i className="fa fa-eye ml-1"></i>{" "}
+                      </strong>{" "}
                     </span>
                   </td>
                   <td>
@@ -319,10 +316,25 @@ const PatientAdmissions = () => {
                         <img
                           src={admission.patient.profileImage}
                           alt={`${admission.patient.firstName} ${admission.patient.lastName}`}
-                          className="rounded-circle-profile"
+                          className="rounded-circle"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            marginRight: "10px",
+                          }}
                         />
                       ) : (
-                        <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
+                        <div
+                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            backgroundColor: "#1976d2",
+                            marginRight: "10px",
+                            fontSize: "20px",
+                          }}
+                        >
                           {admission.patient?.firstName
                             ?.charAt(0)
                             ?.toUpperCase() || ""}
@@ -333,7 +345,7 @@ const PatientAdmissions = () => {
                       )}
                       <div className="flex-wrap">
                         <p className="mb-0" style={{ textAlign: "start" }}>
-                          {admission.patient?.firstName}
+                          {admission.patient?.firstName}{" "}
                           {admission.patient?.lastName}
                         </p>
                         <p className="mb-0">{admission.patient?.email}</p>
@@ -346,11 +358,24 @@ const PatientAdmissions = () => {
                         <img
                           src={admission.doctor.imgUrl}
                           alt={`${admission.doctor.firstName} ${admission.doctor.lastName}`}
-                          className="rounded-circle-profile"
+                          className="rounded-circle"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            marginRight: "10px",
+                          }}
                         />
                       ) : (
                         <div
-                          className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center"
+                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            backgroundColor: "#1976d2",
+                            marginRight: "10px",
+                            fontSize: "20px",
+                          }}
                         >
                           {admission.doctor?.firstName
                             ?.charAt(0)
@@ -362,7 +387,7 @@ const PatientAdmissions = () => {
                       )}
                       <div className="flex-wrap">
                         <p className="mb-0" style={{ textAlign: "start" }}>
-                          {admission.doctor?.firstName}
+                          {admission.doctor?.firstName}{" "}
                           {admission.doctor?.lastName}
                         </p>
                         <p className="mb-0">{admission.doctor?.email}</p>
@@ -381,13 +406,16 @@ const PatientAdmissions = () => {
                       ? new Date(admission.dischargeDate).toLocaleString()
                       : "N/A"}
                   </td>
-
+                  <td>{admission.package?.packageName || "N/A"}</td>
+                  <td>{admission.insurance?.insuranceName || "N/A"}</td>
+                  <td>{admission.policyNo || "N/A"}</td>
                   <td>
                     <span
-                      className={`badges ${admission.status
-                        ? "bg-light-success"
-                        : "bg-light-danger"
-                        }`}
+                      className={`badge ${
+                        admission.status
+                          ? "bg-light-success"
+                          : "bg-light-danger"
+                      }`}
                     >
                       {admission.status ? "Active" : "Inactive"}
                     </span>
@@ -417,21 +445,141 @@ const PatientAdmissions = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7">
-                  <p className="text-center">No data found.</p>
+                <td colSpan="10">
+                  <Preloader />
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+
+        <div className="d-flex justify-content-between align-items-center mt-5">
+          <div>
+            Showing {indexOfLastItem + 1} to{" "}
+            {Math.min(indexOfLastItem, filteredAdmissions.length)} of{" "}
+            {filteredAdmissions.length} results
+          </div>
+          <nav>
+            <ul className="pagination">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  <ArrowBackIosIcon />
+                </button>
+              </li>
+              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(1)}
+                  style={{
+                    height: "42px",
+                    borderRadius: "10px",
+                    boxShadow: "none",
+                    border: "none",
+                  }}
+                >
+                  1
+                </button>
+              </li>
+              {currentPage > 4 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (number) =>
+                    number > 1 &&
+                    number < totalPages &&
+                    Math.abs(number - currentPage) <= 2
+                )
+                .map((number) => (
+                  <li
+                    key={number}
+                    className={`page-item ${
+                      currentPage === number ? "active" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage(number)}
+                      style={{
+                        height: "42px",
+                        borderRadius: "10px",
+                        boxShadow: "none",
+                        border: "none",
+                      }}
+                    >
+                      {number}
+                    </button>
+                  </li>
+                ))}
+              {currentPage < totalPages - 3 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {totalPages > 1 && (
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(totalPages)}
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    {totalPages}
+                  </button>
+                </li>
+              )}
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  <ArrowForwardIosIcon />
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
+
       <div
         className="modal fade"
         id="deleteAdmission"

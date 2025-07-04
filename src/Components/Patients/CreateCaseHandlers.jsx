@@ -488,7 +488,7 @@ const CreateCaseHandlers = () => {
                       >
                         {caseHandlerData.firstName && caseHandlerData.lastName
                           ? `${caseHandlerData.firstName[0]}${caseHandlerData.lastName[0]}`
-                          : <i className="fa fa-upload"></i>}
+                          : <i className="fa fa-pencil"></i>}
                       </div>
                     )}
                   </label>

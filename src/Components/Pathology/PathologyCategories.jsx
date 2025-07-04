@@ -6,7 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
-import Pagination from "../Pagination";
 
 const PathologyCategories = () => {
   const [pathologyCategories, setPathologyCategories] = useState([]);
@@ -19,14 +18,10 @@ const PathologyCategories = () => {
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(null);
   const [excelLoading, setExcelLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10
 
   const fetchPathologyCategories = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/pathologyCategories`
-      );
+      const res = await axios.get(`http://localhost:8080/api/pathologyCategories`);
       const sortedData = res.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
@@ -55,16 +50,17 @@ const PathologyCategories = () => {
       return false;
     }
 
-    // Check for duplicate Pathology Category by name
-    const isDuplicate = pathologyCategories.some(
-      (item) =>
-        item.name.toLowerCase() === pathologyCategory.name.toLowerCase() &&
-        (!editing || item.id !== editId)
-    );
-    if (isDuplicate) {
-      toast.error("A Pathology Category with this name already exists.");
-      return false;
-    }
+
+     // Check for duplicate Pathology Category by name
+  const isDuplicate = pathologyCategories.some(
+    (item) =>
+      item.name.toLowerCase() === pathologyCategory.name.toLowerCase() &&
+      (!editing || item.id !== editId)
+  );
+  if (isDuplicate) {
+    toast.error("A Pathology Category with this name already exists.");
+    return false;
+  }
 
     return true;
   };
@@ -189,27 +185,28 @@ const PathologyCategories = () => {
   const filteredPathologyCategories =
     pathologyCategories.filter(filterBySearch);
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredPathologyCategories.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
-  const totalPages = Math.ceil(filteredPathologyCategories.length / itemsPerPage);
-
-
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const dateObj = new Date(dateString);
+    const day = dateObj.getDate();
+    const month = months[dateObj.getMonth()];
+    const year = dateObj.getFullYear();
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${day} ${month}, ${year} ${hours}:${minutes}`;
   };
 
   return (
@@ -221,41 +218,40 @@ const PathologyCategories = () => {
           <Link
             to="/pathology-categories"
             className={`doctor-nav-btn active`}
-            onClick={() => { }}
+            onClick={() => {}}
           >
             Pathology Categories
           </Link>
           <Link
             to="/pathology-units"
             className={`doctor-nav-btn`}
-            onClick={() => { }}
+            onClick={() => {}}
           >
             Pathology Units
           </Link>
           <Link
             to="/pathology-parameters"
             className={`doctor-nav-btn `}
-            onClick={() => { }}
+            onClick={() => {}}
           >
             Pathology Parameters
           </Link>
         </div>
       </div>
 
-      <div className="filter-bar-container">
-        <div className="filter-search-box">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search"
-            style={{ width: "250px" }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search by Category Name"
+          style={{ width: "250px" }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
         <div className="d-flex justify-content-between align-items-center">
           <button
-            className="filter-btn filter-btn-primary"
+            className="btn btn-primary ml-2"
             data-toggle="modal"
             data-target="#addPathologyCategory"
             onClick={resetForm}
@@ -291,14 +287,13 @@ const PathologyCategories = () => {
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((item, index) => (
+            {filteredPathologyCategories.map((item, index) => (
               <tr key={item.id}>
                 <td>{index + 1}</td>
                 <td>{item.name}</td>
                 <td>{item.description ? item.description : " NA"}</td>
                 <td>
                   <span className="badges bg-light-info">
-                    {formatTime(item.created_at)} <br />
                     {formatDate(item.created_at)}
                   </span>
                 </td>
@@ -325,13 +320,7 @@ const PathologyCategories = () => {
           </tbody>
         </table>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
+
       <div
         className="modal fade document_modal"
         id="addPathologyCategory"
@@ -440,6 +429,8 @@ const PathologyCategories = () => {
           </div>
         </div>
       </div>
+
+    
     </div>
   );
 };

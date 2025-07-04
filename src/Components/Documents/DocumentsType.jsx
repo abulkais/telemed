@@ -50,16 +50,17 @@ const documentTypes = () => {
       return false;
     }
 
-    // Check for duplicate Document Category by name
-    const isDuplicate = documentCategories.some(
-      (item) =>
-        item.name.toLowerCase() === documentCategory.name.toLowerCase() &&
-        (!editing || item.id !== editId)
-    );
-    if (isDuplicate) {
-      toast.error("The name has already been taken.");
-      return false;
-    }
+
+     // Check for duplicate Document Category by name
+  const isDuplicate = documentCategories.some(
+    (item) =>
+      item.name.toLowerCase() === documentCategory.name.toLowerCase() &&
+      (!editing || item.id !== editId)
+  );
+  if (isDuplicate) {
+    toast.error("The name has already been taken.");
+    return false;
+  }
 
     return true;
   };
@@ -112,7 +113,9 @@ const documentTypes = () => {
       return;
     }
     try {
-      await axios.delete(`http://localhost:8080/api/documentTypes/${deleteId}`);
+      await axios.delete(
+        `http://localhost:8080/api/documentTypes/${deleteId}`
+      );
       setDocumentsCategories((prev) =>
         prev.filter((item) => item.id !== deleteId)
       );
@@ -178,31 +181,47 @@ const documentTypes = () => {
     return item.name.toLowerCase().includes(searchLower);
   };
 
-  const filteredDocumentsCategories = documentCategories.filter(filterBySearch);
-
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
+  const filteredDocumentsCategories =
+    documentCategories.filter(filterBySearch);
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const dateObj = new Date(dateString);
+    const day = dateObj.getDate();
+    const month = months[dateObj.getMonth()];
+    const year = dateObj.getFullYear();
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${day} ${month}, ${year} ${hours}:${minutes}`;
   };
+
   return (
     <div>
       <ToastContainer />
 
       <div className="doctor-nav-buttons">
         <div className="nav_headings">
-          <Link to="/documents" className={`doctor-nav-btn`} onClick={() => {}}>
+        <Link
+            to="/documents"
+            className={`doctor-nav-btn`}
+            onClick={() => {}}
+          >
             Documents
           </Link>
-
+          
           <Link
             to="/documnets-types"
             className={`doctor-nav-btn active`}
@@ -210,23 +229,23 @@ const documentTypes = () => {
           >
             Documents Categories
           </Link>
+         
         </div>
       </div>
 
-      <div className="filter-bar-container">
-        <div className="filter-search-box">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search by Category Name"
-            style={{ width: "250px" }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search by Category Name"
+          style={{ width: "250px" }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
         <div className="d-flex justify-content-between align-items-center">
           <button
-            className="filter-btn filter-btn-primary mr-2"
+            className="btn btn-primary ml-2"
             data-toggle="modal"
             data-target="#addDocumentsCategory"
             onClick={resetForm}
@@ -235,7 +254,7 @@ const documentTypes = () => {
           </button>
 
           <button
-            className="filter-btn filter-btn-primary px-2"
+            className="btn btn-success ml-2"
             onClick={downloadExcel}
             disabled={excelLoading}
           >
@@ -256,8 +275,8 @@ const documentTypes = () => {
             <tr>
               <th>S.N</th>
               <th>Name</th>
-              {/* <th>Description</th> */}
-              <th>Created At</th>
+              <th>Description</th>
+              <th>Created Date</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -266,10 +285,9 @@ const documentTypes = () => {
               <tr key={item.id}>
                 <td>{index + 1}</td>
                 <td>{item.name}</td>
-                {/* <td>{item.description ? item.description : " NA"}</td> */}
+                <td>{item.description ? item.description : " NA"}</td>
                 <td>
                   <span className="badges bg-light-info">
-                    {formatTime(item.created_at)} <br />
                     {formatDate(item.created_at)}
                   </span>
                 </td>
@@ -405,6 +423,8 @@ const documentTypes = () => {
           </div>
         </div>
       </div>
+
+    
     </div>
   );
 };

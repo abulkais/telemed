@@ -9,9 +9,6 @@ import { Link } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { tr } from "date-fns/locale";
-import Preloader from "../preloader";
-import Pagination from "../Pagination";
 const Vaccinations = () => {
   const [vaccinations, setVaccinations] = useState([]);
   const [excelLoading, setExcelLoading] = useState(false);
@@ -28,9 +25,8 @@ const Vaccinations = () => {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [showFilter, setShowFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const filterRef = useRef(null);
-  const [loading, setLoading] = useState(true);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -128,8 +124,6 @@ const Vaccinations = () => {
     } catch (error) {
       console.error("Error fetching Vaccinations:", error);
       toast.error("Failed to load Vaccinations");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -302,14 +296,14 @@ const Vaccinations = () => {
           <Link
             to="/vaccinated-patients"
             className={`doctor-nav-btn`}
-            onClick={() => { }}
+            onClick={() => {}}
           >
             <span className="btn-text">Vaccinated Patients</span>
           </Link>
           <Link
             to="/vaccinations"
             className={`doctor-nav-btn active`}
-            onClick={() => { }}
+            onClick={() => {}}
           >
             <span className="btn-text">Vaccinations</span>
           </Link>
@@ -324,7 +318,7 @@ const Vaccinations = () => {
           <input
             type="text"
             className="form-control"
-            placeholder="Search"
+            placeholder="Search Vaccinations by Name"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -344,7 +338,7 @@ const Vaccinations = () => {
                 border: "none",
               }}
             >
-              <FilterAltIcon />
+              <FilterAltIcon/>
             </button>
             {showFilter && (
               <div
@@ -436,69 +430,179 @@ const Vaccinations = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7">
-                  <Preloader />
+            {currentItems.map((item, index) => (
+              <tr key={index}>
+                <td>{indexOfFirstItem + index + 1}</td>
+                <td>
+                  <span className="badges bg-light-success">{item.name}</span>
+                </td>
+                <td>{item.manufacturedBy}</td>
+                <td>{item.brand}</td>
+                <td>
+                  <span
+                    className={`badge ${
+                      item.isAvailable ? "bg-light-success" : "bg-light-danger"
+                    }`}
+                  >
+                    {item.isAvailable ? "Yes" : "No"}
+                  </span>
+                </td>
+                <td>
+                  <div
+                    className="d-flex justify-center items-center"
+                    style={{ justifyContent: "center" }}
+                  >
+                    <button className="btn" onClick={() => handleEdit(item)}>
+                      <i className="fa fa-edit fa-lg text-primary"></i>
+                    </button>
+                    <button
+                      className="btn"
+                      data-toggle="modal"
+                      data-target="#deleteVaccination"
+                      onClick={() => setDeleteId(item.id)}
+                    >
+                      <DeleteIcon className="text-danger" />
+                    </button>
+                  </div>
                 </td>
               </tr>
-            ) : currentItems.length > 0 ? (
-              currentItems.map((item, index) => (
-                <tr key={index}>
-                  <td>{indexOfFirstItem + index + 1}</td>
-                  <td>
-                    <span className="badges bg-light-success">{item.name}</span>
-                  </td>
-                  <td>{item.manufacturedBy}</td>
-                  <td>{item.brand}</td>
-                  <td>
-                    <span
-                      className={`badges ${item.isAvailable ? "bg-light-success" : "bg-light-danger"
-                        }`}
-                    >
-                      {item.isAvailable ? "Yes" : "No"}
-                    </span>
-                  </td>
-                  <td>
-                    <div
-                      className="d-flex justify-center items-center"
-                      style={{ justifyContent: "center" }}
-                    >
-                      <button className="btn" onClick={() => handleEdit(item)}>
-                        <i className="fa fa-edit fa-lg text-primary"></i>
-                      </button>
-                      <button
-                        className="btn"
-                        data-toggle="modal"
-                        data-target="#deleteVaccination"
-                        onClick={() => setDeleteId(item.id)}
-                      >
-                        <DeleteIcon className="text-danger" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7">
-                  <p className="mt-3">No data found.</p>
-                </td>
-              </tr>
-            )}
-
+            ))}
           </tbody>
         </table>
 
+        <div className="d-flex justify-content-between align-items-center mt-5">
+          <div>
+            Showing {indexOfFirstItem + 1} to{" "}
+            {Math.min(indexOfLastItem, filteredVaccinations.length)} of{" "}
+            {filteredVaccinations.length} results
+          </div>
+          <nav>
+            <ul className="pagination">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  <ArrowBackIosIcon />
+                </button>
+              </li>
 
+              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(1)}
+                  style={{
+                    height: "42px",
+                    borderRadius: "10px",
+                    boxShadow: "none",
+                    border: "none",
+                  }}
+                >
+                  1
+                </button>
+              </li>
+
+              {currentPage > 4 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (number) =>
+                    number > 1 &&
+                    number < totalPages &&
+                    Math.abs(number - currentPage) <= 2
+                )
+                .map((number) => (
+                  <li
+                    key={number}
+                    className={`page-item ${
+                      currentPage === number ? "active" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage(number)}
+                      style={{
+                        height: "42px",
+                        borderRadius: "10px",
+                        boxShadow: "none",
+                        border: "none",
+                      }}
+                    >
+                      {number}
+                    </button>
+                  </li>
+                ))}
+
+              {currentPage < totalPages - 3 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+
+              {totalPages > 1 && (
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(totalPages)}
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    {totalPages}
+                  </button>
+                </li>
+              )}
+
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  <ArrowForwardIosIcon />
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
+
       <div
         className="modal fade document_modal"
         id="addVaccination"

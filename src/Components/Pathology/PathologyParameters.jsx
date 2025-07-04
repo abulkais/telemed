@@ -35,9 +35,7 @@ const PathologyParameters = () => {
 
   const fetchPathologyParameters = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/pathologyParameters`
-      );
+      const res = await axios.get(`http://localhost:8080/api/pathologyParameters`);
       const sortedData = res.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
@@ -86,6 +84,7 @@ const PathologyParameters = () => {
       toast.error("Please select a Unit");
       return false;
     }
+   
 
     // Check for duplicate Pathology Parameter by name
     const isDuplicate = pathologyParameters.some(
@@ -240,21 +239,30 @@ const PathologyParameters = () => {
     return item.name.toLowerCase().includes(searchLower);
   };
 
-  const filteredPathologyParameters =
-    pathologyParameters.filter(filterBySearch);
-
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
+  const filteredPathologyParameters = pathologyParameters.filter(filterBySearch);
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const dateObj = new Date(dateString);
+    const day = dateObj.getDate();
+    const month = months[dateObj.getMonth()];
+    const year = dateObj.getFullYear();
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${day} ${month}, ${year} ${hours}:${minutes}`;
   };
 
   return (
@@ -287,20 +295,19 @@ const PathologyParameters = () => {
         </div>
       </div>
 
-      <div className="filter-bar-container">
-        <div className="filter-search-box">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search"
-            style={{ width: "250px" }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search by Parameter Name"
+          style={{ width: "250px" }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
         <div className="d-flex justify-content-between align-items-center">
           <button
-            className="filter-btn filter-btn-primary"
+            className="btn btn-primary ml-2"
             data-toggle="modal"
             data-target="#addPathologyParameter"
             onClick={resetForm}
@@ -353,7 +360,6 @@ const PathologyParameters = () => {
                   <td>{item.description}</td>
                   <td>
                     <span className="badges bg-light-info">
-                      {formatTime(item.created_at)} <br />
                       {formatDate(item.created_at)}
                     </span>
                   </td>
@@ -362,7 +368,10 @@ const PathologyParameters = () => {
                       className="d-flex justify-center items-center"
                       style={{ justifyContent: "center" }}
                     >
-                      <button className="btn" onClick={() => handleEdit(item)}>
+                      <button
+                        className="btn"
+                        onClick={() => handleEdit(item)}
+                      >
                         <i className="text-primary fa fa-edit fa-lg" />
                       </button>
                       <button
@@ -390,10 +399,7 @@ const PathologyParameters = () => {
         aria-labelledby="addPathologyParameter"
         aria-hidden="true"
       >
-        <div
-          className="modal-dialog modal-dialog-lg modal-center"
-          role="document"
-        >
+        <div className="modal-dialog modal-dialog-lg modal-center" role="document">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
@@ -412,61 +418,65 @@ const PathologyParameters = () => {
               </button>
             </div>
             <div className="modal-body">
-              <div className="form-group">
-                <label>
-                  Name: <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Enter Parameter Name"
-                  value={pathologyParameter.name}
-                  className="form-control"
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Reference Range: <span className="text-danger">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="referenceRange"
-                  placeholder="Enter Reference Range"
-                  value={pathologyParameter.referenceRange}
-                  className="form-control"
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>
-                  Unit: <span className="text-danger">*</span>
-                </label>
-                <Select
-                  options={unitOptions}
-                  value={unitOptions.find(
-                    (opt) => opt.value === pathologyParameter.unitId
-                  )}
-                  onChange={handleUnitChange}
-                  className="basic-single"
-                  classNamePrefix="select"
-                  isClearable
-                  placeholder="Select Unit"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Description:</label>
-                <textarea
-                  name="description"
-                  placeholder="Enter Description"
-                  value={pathologyParameter.description}
-                  className="form-control"
-                  onChange={handleChange}
-                  rows="3"
-                />
+              
+                  <div className="form-group">
+                    <label>
+                      Name: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Enter Parameter Name"
+                      value={pathologyParameter.name}
+                      className="form-control"
+                      onChange={handleChange}
+                    />
+                  </div>
+              
+                  <div className="form-group">
+                    <label>
+                      Reference Range: <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="referenceRange"
+                      placeholder="Enter Reference Range"
+                      value={pathologyParameter.referenceRange}
+                      className="form-control"
+                      onChange={handleChange}
+                    />
+                  </div>
+                
+                  <div className="form-group">
+                    <label>
+                      Unit: <span className="text-danger">*</span>
+                    </label>
+                    <Select
+                      options={unitOptions}
+                      value={unitOptions.find(
+                        (opt) => opt.value === pathologyParameter.unitId
+                      )}
+                      onChange={handleUnitChange}
+                      className="basic-single"
+                      classNamePrefix="select"
+                      isClearable
+                      placeholder="Select Unit"
+                    />
+                  </div>
+               
+                  <div className="form-group">
+                    <label>
+                      Description: 
+                    </label>
+                    <textarea
+                      name="description"
+                      placeholder="Enter Description"
+                      value={pathologyParameter.description}
+                      className="form-control"
+                      onChange={handleChange}
+                      rows="3"
+                    />
+                 
               </div>
               <div className="d-flex align-center justify-center mt-4">
                 <button className="btn btn-primary mr-3" onClick={handleSubmit}>
@@ -523,6 +533,8 @@ const PathologyParameters = () => {
           </div>
         </div>
       </div>
+
+    
     </div>
   );
 };

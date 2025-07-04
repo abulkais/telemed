@@ -5,27 +5,25 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import * as XLSX from "xlsx";
+import "react-datepicker/dist/react-datepicker.css";
 import { Link } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
 
-const MedicineBrands = () => {
-  const [brandsData, setBrandsData] = useState([]);
+const FinanceCategories = () => {
+  const [FinanceCategoriesData, setFinanceCategoriesData] = useState([]);
   const [excelLoading, setExcelLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [brand, setBrand] = useState({
+  const [FinanceCategory, setFinanceCategory] = useState({
     name: "",
-    countryCode: "",
-    phone: "",
-    email: "",
   });
   const [deleteId, setDeleteId] = useState(null);
-  const [filter, setFilter] = useState("MedicineBrands");
-
   const [editing, setEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [dateFilter, setDateFilter] = useState({
+    start: null,
+    end: null,
+  });
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,22 +31,27 @@ const MedicineBrands = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setBrand((prev) => ({
+    setFinanceCategory((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
   const validateForm = () => {
-    if (!brand.name) {
-      toast.error("Brand name is required");
+    if (!FinanceCategory.name) {
+      toast.error("Finance Category name is required");
       return false;
     }
 
-  
+    // Check for duplicate department name (case insensitive)
+    const isDuplicate = FinanceCategoriesData.some(
+      (type) =>
+        type.name.toLowerCase() === FinanceCategory.name.toLowerCase() &&
+        (!editing || type.id !== editId)
+    );
 
-    if (brand.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(brand.email)) {
-      toast.error("Please enter a valid email address");
+    if (isDuplicate) {
+      toast.error("The name has already been taken.");
       return false;
     }
 
@@ -58,101 +61,97 @@ const MedicineBrands = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    // const isDuplicate = brandsData.some(
-    //   (brand) => brand.name.toLowerCase() === brand.name.toLowerCase()
-    // );
-
-    // if (isDuplicate && !editing) {
-    //   toast.error("This Brand name already exists!");
-    //   return;
-    // }
     const currentDate = new Date().toISOString().slice(0, 19).replace("T", " ");
 
-    const newId = String(brandsData.length + 1).padStart(2, "0");
-    const brandId = String(brandsData.length + 1).padStart(2, "0");
+    // Generate a simple ID
+    const newId = String(FinanceCategoriesData.length + 1).padStart(2, "0");
+    const FinanceCategoryId = String(FinanceCategoriesData.length + 1).padStart(
+      2,
+      "0"
+    );
 
-    const newBrand = {
-      ...brand,
+    const newFinanceCategory = {
+      ...FinanceCategory,
       id: newId,
-      brandId: brandId,
+      FinanceCategoryId: FinanceCategoryId,
       created_at: currentDate,
     };
 
     try {
       if (editing) {
         await axios.put(
-          `http://localhost:8080/api/medicineBrands/${editId}`,
-          newBrand
+          `http://localhost:8080/api/financeCategories/${editId}`,
+          newFinanceCategory
         );
-        toast.success("Brand Updated Successfully");
+        toast.success("Finance Category Updated Successfully");
       } else {
-        await axios.post(`http://localhost:8080/api/medicineBrands`, newBrand);
-        toast.success("Brand Added Successfully");
+        await axios.post(
+          `http://localhost:8080/api/financeCategories`,
+          newFinanceCategory
+        );
+        toast.success("Finance Category Added Successfully");
       }
-
-      fetchBrandsData();
+      fetchFinanceCategory();
       resetForm();
-      $("#addBrand").modal("hide");
+      $("#addFinanceCategory").modal("hide");
     } catch (error) {
       console.error("Submission error:", error);
-      toast.error("Error saving Brand");
+      toast.error("Error saving Finance Category");
     }
   };
 
   const resetForm = () => {
-    setBrand({
+    setFinanceCategory({
       name: "",
-      countryCode: "",
-      phone: "",
-      email: "",
     });
     setEditing(false);
     setEditId(null);
   };
 
-  const fetchBrandsData = async () => {
+  const fetchFinanceCategory = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/medicineBrands`);
+      const res = await axios.get(
+        `http://localhost:8080/api/financeCategories`
+      );
       const sortedData = res.data.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
       );
-      setBrandsData(sortedData);
+      setFinanceCategoriesData(sortedData);
       setCurrentPage(1);
     } catch (error) {
-      console.error("Error fetching Brands:", error);
-      toast.error("Failed to load Brands");
+      console.error("Error fetching Finance Category:", error);
+      toast.error("Failed to load Finance Category");
     }
   };
 
-  const deleteBrand = async () => {
+  const deleteFinanceCategory = async () => {
     if (!deleteId) {
-      toast.error("Invalid Brand ID!");
+      toast.error("Invalid Finance Category ID!");
       return;
     }
 
     try {
       await axios.delete(
-        `http://localhost:8080/api/medicineBrands/${deleteId}`
+        `http://localhost:8080/api/financeCategories/${deleteId}`
       );
-      setBrandsData((prev) => prev.filter((brand) => brand.id !== deleteId));
-      toast.success("Brand deleted successfully!");
-      $("#DeleteBrand").modal("hide");
+      setFinanceCategoriesData((prev) =>
+        prev.filter((type) => type.id !== deleteId)
+      );
+      toast.success("Finance Category  deleted successfully!");
+      $("#deleteFinanceCategory").modal("hide");
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error("Error deleting Brand!");
+      toast.error("Error deleting Finance Category!");
     }
   };
 
-  const handleEdit = (brand) => {
+  const handleEdit = (type) => {
     setEditing(true);
-    setEditId(brand.id);
-    setBrand({
-      name: brand.name,
-      phone: brand.phone,
-      countryCode: brand.countryCode,
-      email: brand.email,
+    setEditId(type.id);
+    setFinanceCategory({
+      name: type.name,
     });
-    $("#addBrand").modal("show");
+    $("#addFinanceCategory").modal("show");
   };
 
   const downloadCSV = () => {
@@ -161,14 +160,28 @@ const MedicineBrands = () => {
     let dataToExport;
     let fileName;
 
-    if (searchQuery) {
-      dataToExport = brandsData.filter(filterBySearch);
-      fileName = `Medicine_Brands_Filtered_${new Date()
+    if (dateFilter.start && !dateFilter.end) {
+      dataToExport = FinanceCategoriesData.filter((doc) => {
+        const docDate = new Date(doc.created_at);
+        const filterDate = new Date(dateFilter.start);
+
+        return (
+          docDate.getDate() === filterDate.getDate() &&
+          docDate.getMonth() === filterDate.getMonth() &&
+          docDate.getFullYear() === filterDate.getFullYear()
+        );
+      });
+      fileName = `Finance_Category_${new Date(dateFilter.start)
+        .toISOString()
+        .slice(0, 10)}.xlsx`;
+    } else if (dateFilter.start || dateFilter.end || searchQuery) {
+      dataToExport = FinanceCategoriesData.filter(filterBySearch);
+      fileName = `Finance_Category_Filtered_${new Date()
         .toISOString()
         .slice(0, 10)}.xlsx`;
     } else {
-      dataToExport = brandsData;
-      fileName = `Medicine_Brands_All_Data_${new Date()
+      dataToExport = FinanceCategoriesData;
+      fileName = `Finance_Category_All_Data_${new Date()
         .toISOString()
         .slice(0, 10)}.xlsx`;
     }
@@ -181,55 +194,53 @@ const MedicineBrands = () => {
 
     const data = [
       {
-        "ID": "ID",
-        "Brand Name": "Brand Name",
-        "Phone Number": "Phone Number",
-        "Email ID": "Email ID",
+        "Finance Category ID": "Finance Category ID",
+        "Finance Category Name": "Finance Category Name",
         "Date & Time": "Date & Time",
       },
-      ...dataToExport.map((brand, index) => ({
-        "ID": index + 1,
-        "Brand Name": brand.name,
-        "Phone Number": `${brand.countryCode} ${brand.phone}`,
-        "Email ID": brand.email,
-        "Date": formatDate(brand.created_at),
+      ...dataToExport.map((type) => ({
+        "Finance Category ID": type.FinanceCategoryId,
+        "Finance Category Name": type.name,
+        "Date & Time": formatDate(type.created_at),
       })),
     ];
 
     const worksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true });
-    worksheet["!cols"] = [
-      { wch: 5 },
-      { wch: 20 },
-      { wch: 15 },
-      { wch: 25 },
-      { wch: 20 },
-    ];
+    worksheet["!cols"] = [{ wch: 15 }, { wch: 20 }, { wch: 30 }, { wch: 20 }];
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Brands Report");
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Bed_Types_Filtered_ Report"
+    );
     XLSX.writeFile(workbook, fileName);
     setExcelLoading(false);
     toast.success(`Report downloaded (${dataToExport.length} records)`);
   };
 
-  const filterBySearch = (brand) => {
+  const filterBySearch = (doc) => {
     if (!searchQuery) return true;
 
     const searchLower = searchQuery.toLowerCase();
     return (
-      (brand.name && brand.name.toLowerCase().includes(searchLower)) ||
-      (brand.phone && brand.phone.toLowerCase().includes(searchLower)) ||
-      (brand.email && brand.email.toLowerCase().includes(searchLower))
+      (doc.name && doc.name.toLowerCase().includes(searchLower)) ||
+      (doc.FinanceCategoryId &&
+        doc.FinanceCategoryId.toLowerCase().includes(searchLower))
     );
   };
 
-  const filteredBrands = brandsData.filter(filterBySearch);
+  const filteredFinanceCategories =
+    FinanceCategoriesData.filter(filterBySearch);
 
   // Pagination calculations
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredBrands.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filteredBrands.length / itemsPerPage);
+  const currentItems = filteredFinanceCategories.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredFinanceCategories.length / itemsPerPage);
 
   const formatDate = (dateString) => {
     const months = [
@@ -254,76 +265,27 @@ const MedicineBrands = () => {
   };
 
   useEffect(() => {
-    fetchBrandsData();
+    fetchFinanceCategory();
   }, []);
 
   return (
     <div>
       <ToastContainer />
+
       <div className="doctor-nav-buttons">
         <div className="nav_headings">
-          <Link
-            to="/medicnies-categories"
-            className={`doctor-nav-btn ${
-              filter === "MedicineCategories" ? "active" : ""
-            }`}
-            onClick={() => setFilter("MedicineCategories")}
-          >
-            <span className="btn-text">Medicine Categories</span>
+          <Link to="/finance-categories" className="doctor-nav-btn active">
+            <span className="btn-text">Finance Category</span>
           </Link>
 
-          <Link
-            to="/medicine-brands"
-            className={`doctor-nav-btn ${
-              filter === "MedicineBrands" ? "active" : ""
-            }`}
-            onClick={() => setFilter("MedicineBrands")}
-          >
-            <span className="btn-text">Medicine Brands</span>
+          <Link to="/income" className="doctor-nav-btn">
+            <span className="btn-text">Income</span>
           </Link>
-
-          <Link
-            to="/medicine"
-            className={`doctor-nav-btn ${
-              filter === "Medicine" ? "active" : ""
-            }`}
-            onClick={() => setFilter("Medicine")}
-          >
-            <span className="btn-text">Medicine</span>
-          </Link>
-
-          <Link
-            to="/purchase-medicine"
-            className={`doctor-nav-btn ${
-              filter === "PurchaseMedicine" ? "active" : ""
-            }`}
-            onClick={() => setFilter("PurchaseMedicine")}
-          >
-            <span className="btn-text">Purchase Medicine</span>
-          </Link>
-
-          <Link
-            to="/used-medicine"
-            className={`doctor-nav-btn ${
-              filter === "UsedMedicine" ? "active" : ""
-            }`}
-            onClick={() => setFilter("UsedMedicine")}
-          >
-            <span className="btn-text">Used Medicine</span>
-          </Link>
-
-          <Link
-            to="/medicine-bills"
-            className={`doctor-nav-btn ${
-              filter === "MedicineBills" ? "active" : ""
-            }`}
-            onClick={() => setFilter("MedicineBills")}
-          >
-            <span className="btn-text">Medicine Bills</span>
+          <Link to="/expenses" className="doctor-nav-btn">
+            <span className="btn-text">Expenses</span>
           </Link>
         </div>
       </div>
-
       <div className="filter-bar-container">
         <div className="filter-search-box">
           <input
@@ -334,15 +296,14 @@ const MedicineBrands = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-
         <div className="d-flex justify-content-between align-items-center">
           <button
             className="filter-btn filter-btn-primary"
             data-toggle="modal"
-            data-target="#addBrand"
+            data-target="#addFinanceCategory"
             onClick={resetForm}
           >
-            New Medicine Brand
+            New Finance Category
           </button>
 
           <button
@@ -366,25 +327,22 @@ const MedicineBrands = () => {
           <thead className="thead-light">
             <tr>
               <th>S.N</th>
-              <th>Brand Name</th>
-              <th>Phone Number</th>
-              <th>Email ID</th>
-              <th>Date & Time</th>
+              <th>Finance Category </th>
+              <th>Created At</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((brand, index) => (
+            {currentItems.map((type, index) => (
               <tr key={index}>
                 <td>{indexOfFirstItem + index + 1}</td>
-                <td>
-                  <span className="badges bg-light-success">{brand.name}</span>
+                <td className="text-capitalize">
+                  <span className="badges bg-light-success">{type.name}</span>
                 </td>
-                <td>{brand.countryCode} {brand.phone || "N/A"}</td>
-                <td>{brand.email || "N/A"}</td>
+
                 <td>
                   <div className="badges bg-light-info">
-                    {formatDate(brand.created_at)}
+                    {formatDate(type.created_at)}
                   </div>
                 </td>
                 <td>
@@ -392,14 +350,14 @@ const MedicineBrands = () => {
                     className="d-flex justify-center items-center"
                     style={{ justifyContent: "center" }}
                   >
-                    <button className="btn" onClick={() => handleEdit(brand)}>
+                    <button className="btn" onClick={() => handleEdit(type)}>
                       <i className="text-primary fa fa-edit fa-lg" />
                     </button>
                     <button
                       className="btn"
                       data-toggle="modal"
-                      data-target="#DeleteBrand"
-                      onClick={() => setDeleteId(brand.id)}
+                      data-target="#deleteFinanceCategory"
+                      onClick={() => setDeleteId(type.id)}
                     >
                       <DeleteIcon className="text-danger" />
                     </button>
@@ -414,8 +372,8 @@ const MedicineBrands = () => {
         <div className="d-flex justify-content-between align-items-center mt-5">
           <div>
             Showing {indexOfFirstItem + 1} to{" "}
-            {Math.min(indexOfLastItem, filteredBrands.length)} of{" "}
-            {filteredBrands.length} results
+            {Math.min(indexOfLastItem, filteredFinanceCategories.length)} of{" "}
+            {filteredFinanceCategories.length} results
           </div>
           <nav>
             <ul className="pagination">
@@ -549,13 +507,13 @@ const MedicineBrands = () => {
         </div>
       </div>
 
-      {/* Add/Edit Brand Modal */}
+      {/* Add/Edit finance Category Modal */}
       <div
         className="modal fade document_modal"
-        id="addBrand"
+        id="addFinanceCategory"
         tabIndex="-1"
         role="dialog"
-        aria-labelledby="addBrand"
+        aria-labelledby="addFinanceCategory"
         aria-hidden="true"
       >
         <div
@@ -565,7 +523,7 @@ const MedicineBrands = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
-                {editing ? "Edit Medicine Brand" : "New Medicine Brand"}
+                {editing ? "Edit Finance Category" : "New Finance Category"}
               </h5>
               <button
                 type="button"
@@ -580,58 +538,13 @@ const MedicineBrands = () => {
             <div className="modal-body">
               <div className="form-group">
                 <label>
-                  Brand Name: <span className="text-danger">*</span>
+                  Finance Category: <span className="text-danger">*</span>
                 </label>
                 <input
                   type="text"
                   name="name"
-                  placeholder="Brand Name"
-                  value={brand.name}
-                  className="form-control"
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Phone Number:</label>
-                <div className="input-group">
-                  <PhoneInput
-                    country={"in"} // Default country (India)
-                    value={brand.countryCode} // Bind to countryCode
-                    onChange={(countryCode) =>
-                      setBrand((prev) => ({
-                        ...prev,
-                        countryCode: `+${countryCode}`, // Store country code with +
-                      }))
-                    }
-                    inputClass="form-control"
-                    containerStyle={{ width: "15%" }}
-                    inputStyle={{ width: "100%" }}
-                    placeholder=""
-                    enableSearch={true}
-                    disableDropdown={false}
-                  />
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Phone Number"
-                    value={brand.phone}
-                    className="form-control"
-                    onChange={handleChange}
-                    pattern="[0-9]{10}"
-                    maxLength="10"
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Email ID:</label>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email ID"
-                  value={brand.email}
+                  placeholder="Finance Category"
+                  value={FinanceCategory.name}
                   className="form-control"
                   onChange={handleChange}
                 />
@@ -657,10 +570,10 @@ const MedicineBrands = () => {
       {/* Delete Confirmation Modal */}
       <div
         className="modal fade"
-        id="DeleteBrand"
+        id="deleteFinanceCategory"
         tabIndex="-1"
         role="dialog"
-        aria-labelledby="DeleteBrand"
+        aria-labelledby="deleteFinanceCategory"
         aria-hidden="true"
       >
         <div
@@ -675,11 +588,11 @@ const MedicineBrands = () => {
               />
             </span>
             <h2>Delete</h2>
-            <p>Are you sure want to delete this Brand?</p>
+            <p>Are you sure want to delete this Finance Category?</p>
             <div className="d-flex">
               <button
                 className="btn btn-danger w-100 mr-1"
-                onClick={deleteBrand}
+                onClick={deleteFinanceCategory}
               >
                 Yes, Delete
               </button>
@@ -697,4 +610,4 @@ const MedicineBrands = () => {
   );
 };
 
-export default MedicineBrands;
+export default FinanceCategories;

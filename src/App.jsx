@@ -87,7 +87,7 @@ import ViewPharmacist from "./Components/Users/ViewPharmacist";
 import ViewOpdPatient from "./Components/OPDPatients/ViewOpdPatient";
 import CreateOpdPatient from "./Components/OPDPatients/CreateOpdPatient";
 import OpdPatients from "./Components/OPDPatients/OpdPatient";
-import FinanceCategories from "./Components/Finance/ExpensesCategories";
+import FinanceCategories from "./Components/Finance/FinanceCategories";
 import Income from "./Components/Finance/Income";
 import Expenses from "./Components/Finance/Expenses";
 import Accounts from "./Components/Billing/Accounts";
@@ -101,13 +101,7 @@ import PaymentReports from "./Components/Billing/PaymentReports";
 import AdvancedPayments from "./Components/Billing/AdvancedPayments";
 import DeathReports from "./Components/Reports/DeathReports";
 import BirthReports from "./Components/Reports/BirthReports";
-import IncomeCategories from "./Components/Finance/IncomeCategories";
-import ExpensesCategories from "./Components/Finance/ExpensesCategories";
-import Prescriptions from "./Components/Prescriptions/Prescriptions";
-import CreatePrescription from "./Components/Prescriptions/CreatePrescription";
-import PrescriptionPDFViewer from "./Components/Prescriptions/PrescriptionPDFViewer";
-import ViewPrescription from "./Components/Prescriptions/ViewPrescription";
-import BedAssign from "./Components/BedManagement/BedAssign";
+
 
 function App() {
   return (
@@ -136,7 +130,7 @@ function App() {
               <Route path="/doctors-breaks" element={<DoctorsBreaks />} />
 
               <Route path="/bed-types" element={<BedTypes />} />
-              <Route path="/bed-assigns" element={<BedAssign />} />
+
               <Route
                 path="/medicnies-categories"
                 element={<MedicinesCategories />}
@@ -373,11 +367,9 @@ function App() {
               />
 
               <Route
-                path="/expenses-categories"
-                element={<ExpensesCategories />}
+                path="/finance-categories"
+                element={<FinanceCategories />}
               />
-              <Route path="/income-categories" element={<IncomeCategories />} />
-
               <Route path="/income" element={<Income />} />
               <Route path="/expenses" element={<Expenses />} />
 
@@ -406,24 +398,10 @@ function App() {
 
               <Route path="/death-reports" element={<DeathReports />} />
               <Route path="/birth-reports" element={<BirthReports />} />
-              <Route path="/prescriptions" element={<Prescriptions />} />
-              <Route
-                path="/prescriptions/create"
-                element={<CreatePrescription />}
-              />
-              <Route
-                path="/prescriptions/:id/edit"
-                element={<CreatePrescription />}
-              />
-              <Route
-                path="/prescriptions/:id/pdf"
-                element={<PrescriptionPDFViewer />}
-              />
-              <Route
-                path="/prescriptions/:id/view"
-                element={<ViewPrescription />}
-              />
+
             </Routes>
+
+
           </div>
         </div>
       </Router>

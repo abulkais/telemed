@@ -498,7 +498,7 @@ const CreateNurse = () => {
                         {nurseData.firstName && nurseData.lastName ? (
                           `${nurseData.firstName[0]}${nurseData.lastName[0]}`
                         ) : (
-                          <i className="fa fa-upload"></i>
+                          <i className="fa fa-pencil"></i>
                         )}
                       </div>
                     )}

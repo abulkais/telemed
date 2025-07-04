@@ -238,18 +238,28 @@ const Documents = () => {
 
   const filteredDocuments = documents.filter(filterBySearch);
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const dateObj = new Date(dateString);
+    const day = dateObj.getDate();
+    const month = months[dateObj.getMonth()];
+    const year = dateObj.getFullYear();
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${day} ${month}, ${year} ${hours}:${minutes}`;
   };
 
   return (
@@ -265,20 +275,18 @@ const Documents = () => {
           </Link>
         </div>
       </div>
-      <div className="filter-bar-container">
-        <div className="filter-search-box">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search"
-            style={{ width: "250px" }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search by Patient"
+          style={{ width: "250px" }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         <div className="d-flex justify-content-between align-items-center">
           <button
-            className="filter-btn filter-btn-primary"
+            className="btn btn-primary ml-2"
             data-toggle="modal"
             data-target="#addDocument"
             onClick={resetForm}
@@ -293,11 +301,12 @@ const Documents = () => {
           <thead className="thead-light">
             <tr>
               <th>S.N</th>
-
+              <th>Attachment</th>
               <th>Document Type</th>
               <th>Patient</th>
-              <th>Attachment</th>
-              <th>Created At</th>
+              
+
+              <th>Created Date</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -305,33 +314,6 @@ const Documents = () => {
             {filteredDocuments.map((item, index) => (
               <tr key={item.id}>
                 <td>{index + 1}</td>
-
-                <td>
-                  <span className="badges bg-light-info">{item.name}</span>
-                </td>
-
-                <td>
-                  <div className="d-flex align-items-center">
-                    {item.patientImgUrl ? (
-                      <img
-                        src={`${baseUrl}${item.patientImgUrl}`}
-                        alt={`${item.patientFirstName} ${item.patientLastName}`}
-                        className="rounded-circle-profile "
-                      />
-                    ) : (
-                      <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
-                        {item.patientFirstName?.charAt(0)?.toUpperCase() || ""}
-                        {item.patientLastName?.charAt(0)?.toUpperCase() || ""}
-                      </div>
-                    )}
-                    <div className="flex-wrap">
-                      <p className="mb-0" style={{ textAlign: "start" }}>
-                        {item.patientFirstName} {item.patientLastName}
-                      </p>
-                      <p className="mb-0">{item.patientEmail}</p>
-                    </div>
-                  </div>
-                </td>
                 <td>
                   {item.attachment ? (
                     <a
@@ -363,9 +345,51 @@ const Documents = () => {
                   )}
                 </td>
                 <td>
-                  <span className="badges bg-light-info lh-lg">
-                    {formatTime(item.created_at)}
-                    <br />
+                  <span className="badges bg-light-info">{item.name}</span>
+                </td>
+
+
+                <td>
+                  <div className="d-flex align-items-center">
+                    {item.patientImgUrl ? (
+                      <img
+                        src={`${baseUrl}${item.patientImgUrl}`}
+                        alt={`${item.patientFirstName} ${item.patientLastName}`}
+                        className="rounded-circle"
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                          marginRight: "10px",
+                        }}
+                      />
+                    ) : (
+                      <div
+                        className="rounded-circle text-white d-flex align-items-center justify-content-center"
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          backgroundColor: "#1976d2",
+                          marginRight: "10px",
+                          fontSize: "20px",
+                        }}
+                      >
+                        {item.patientFirstName?.charAt(0)?.toUpperCase() || ""}
+                        {item.patientLastName?.charAt(0)?.toUpperCase() || ""}
+                      </div>
+                    )}
+                    <div className="flex-wrap">
+                      <p className="mb-0" style={{ textAlign: "start" }}>
+                        {item.patientFirstName} {item.patientLastName}
+                      </p>
+                      <p className="mb-0">{item.patientEmail}</p>
+                    </div>
+                  </div>
+                </td>
+            
+
+                <td>
+                  <span className="badges bg-light-info">
                     {formatDate(item.created_at)}
                   </span>
                 </td>
@@ -500,7 +524,7 @@ const Documents = () => {
                   rows="3"
                 />
               </div>
-              <div className="d-flex align-items-center justify-content-end mt-4">
+              <div className="d-flex align-items-center justify-content-center mt-4">
                 <button className="btn btn-primary mr-3" onClick={handleSubmit}>
                   {editing ? "Update" : "Save"}
                 </button>
@@ -533,7 +557,7 @@ const Documents = () => {
           <div className="modal-content text-center">
             <span className="modal-icon">
               <img
-                src="https://hms.infyom.com/assets/images/remove.png"
+                src="https://hms.infyom.com/assets/images/delete.png"
                 alt=""
               />
             </span>

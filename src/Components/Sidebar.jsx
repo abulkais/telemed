@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../assets/Sidebar.css";
 import { Link } from "react-router-dom";
+import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
 import SearchIcon from "@mui/icons-material/Search";
+import Payment from "@mui/icons-material/Payment";
 import PeopleIcon from "@mui/icons-material/People";
 import AddIcon from "@mui/icons-material/Add";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import AccessibleIcon from "@mui/icons-material/Accessible";
 import BedIcon from "@mui/icons-material/Bed";
 import DescriptionIcon from "@mui/icons-material/Description";
 import OpacityIcon from "@mui/icons-material/Opacity";
@@ -217,7 +220,7 @@ const Sidebar = () => {
           </li>
 
           <li className="nav-item">
-            <Link to="/income-categories" className="nav-link" title="Finance">
+            <Link to="/finance-categories" className="nav-link" title="Finance">
               <svg
                 width="20"
                 height="20"
@@ -239,29 +242,7 @@ const Sidebar = () => {
               {!isCollapsed && <span>Finance</span>}
             </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/prescriptions" className="nav-link" title="Finance">
-              <svg
-                width="20"
-                height="20"
-                className="svg-inline--fa fa-file-prescription mr-1"
-                aria-hidden="true"
-                focusable="false"
-                data-prefix="fas"
-                data-icon="file-prescription"
-                role="img"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 384 512"
-                data-fa-i2svg=""
-              >
-                <path
-                  fill="currentColor"
-                  d="M176 240H128v32h48C184.9 272 192 264.9 192 256S184.9 240 176 240zM256 0v128h128L256 0zM224 128L224 0H48C21.49 0 0 21.49 0 48v416C0 490.5 21.49 512 48 512h288c26.51 0 48-21.49 48-48V160h-127.1C238.3 160 224 145.7 224 128zM292.5 315.5l11.38 11.25c6.25 6.25 6.25 16.38 0 22.62l-29.88 30L304 409.4c6.25 6.25 6.25 16.38 0 22.62l-11.25 11.38c-6.25 6.25-16.5 6.25-22.75 0L240 413.3l-30 30c-6.249 6.25-16.48 6.266-22.73 .0156L176 432c-6.25-6.25-6.25-16.38 0-22.62l29.1-30.12L146.8 320H128l.0078 48.01c0 8.875-7.125 16-16 16L96 384c-8.875 0-16-7.125-16-16v-160C80 199.1 87.13 192 96 192h80c35.38 0 64 28.62 64 64c0 24.25-13.62 45-33.5 55.88L240 345.4l29.88-29.88C276.1 309.3 286.3 309.3 292.5 315.5z"
-                ></path>
-              </svg>
-              {!isCollapsed && <span>Prescriptions</span>}
-            </Link>
-          </li>
+
           <li className="nav-item">
             <Link to="/account" className="nav-link" title="Billing">
               <svg
@@ -285,7 +266,7 @@ const Sidebar = () => {
               {!isCollapsed && <span>Billing</span>}
             </Link>
           </li>
-
+      
           <li className="nav-item">
             <Link to="/bed-types" className="nav-link" title="Bed Management">
               <BedIcon className="icon" />

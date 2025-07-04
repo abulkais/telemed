@@ -499,7 +499,7 @@ const CreatePatients = () => {
                         {patientData.firstName && patientData.lastName ? (
                           `${patientData.firstName[0]}${patientData.lastName[0]}`
                         ) : (
-                          <i className="fa fa-upload"></i>
+                          <i className="fa fa-pencil"></i>
                         )}
                       </div>
                     )}

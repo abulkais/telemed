@@ -476,7 +476,7 @@ const Services = () => {
                 <td>{formatCurrency(item.serviceRate)}</td>
                 <td>
                   <span
-                    className={`badges ${
+                    className={`badge ${
                       item.serviceStatus
                         ? "bg-light-success"
                         : "bg-light-danger"

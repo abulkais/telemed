@@ -1387,7 +1387,7 @@ const Doctors = () => {
                         </>
                       ) : (
                         <div className="empty-profile">
-                          <i className="fa fa-upload"></i>
+                          <i className="fa fa-pencil"></i>
                         </div>
                       )}
                     </label>

@@ -7,7 +7,6 @@ import Select from "react-select";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Preloader from "../Preloader.jsx";
 import "../../assets/Patients.css";
-import Pagination from "../Pagination.jsx";
 
 const OperationReports = () => {
   const [reports, setReports] = useState([]);
@@ -22,8 +21,6 @@ const OperationReports = () => {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteId, setDeleteId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10
   const [isDeleting, setIsDeleting] = useState(false);
   const baseurl = "http://localhost:8080";
 
@@ -35,14 +32,14 @@ const OperationReports = () => {
       console.error("Error fetching operation reports:", error);
       toast.error(
         "Failed to load operation reports: " +
-        (error.response?.data?.error || error.message)
+          (error.response?.data?.error || error.message)
       );
     }
   };
 
   const fetchCases = async () => {
     try {
-      const res = await axios.get(`${baseurl}/api/operationReports/caseIdWithPatients`);
+      const res = await axios.get(`${baseurl}/api/caseIdWithPatients`);
       const caseOptions = res.data.map((item) => ({
         value: item.id,
         label: `${item.caseId}  ${item.patientName}`,
@@ -52,7 +49,7 @@ const OperationReports = () => {
       console.error("Error fetching cases with patients:", error);
       toast.error(
         "Failed to load cases with patients: " +
-        (error.response?.data?.error || error.message)
+          (error.response?.data?.error || error.message)
       );
     }
   };
@@ -69,7 +66,7 @@ const OperationReports = () => {
       console.error("Error fetching doctors:", error);
       toast.error(
         "Failed to load doctors: " +
-        (error.response?.data?.error || error.message)
+          (error.response?.data?.error || error.message)
       );
     }
   };
@@ -209,15 +206,6 @@ const OperationReports = () => {
     ].some((field) => field?.includes(searchQuery.toLowerCase()))
   );
 
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredReports.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
-  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
-
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -289,8 +277,8 @@ const OperationReports = () => {
             </tr>
           </thead>
           <tbody>
-            {currentItems.length > 0 ? (
-              currentItems.map((report, index) => (
+            {filteredReports.length > 0 ? (
+              filteredReports.map((report, index) => (
                 <tr key={report.id}>
                   <td>{index + 1}</td>
                   <td>
@@ -509,14 +497,6 @@ const OperationReports = () => {
           </div>
         </div>
       </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
 
       {/* Delete Confirmation Modal */}
       <div

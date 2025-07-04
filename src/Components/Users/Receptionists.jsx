@@ -330,7 +330,7 @@ const Receptionists = () => {
                   <td>{receptionist.designation}</td>
                   <td>
                     <span
-                      className={`badges ${
+                      className={`badge ${
                         receptionist.status === "Active"
                           ? "bg-light-success"
                           : "bg-light-danger"

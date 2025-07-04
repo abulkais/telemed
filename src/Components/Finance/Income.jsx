@@ -11,7 +11,6 @@ import * as XLSX from "xlsx";
 import removeIcon from "../../assets/images/remove.png";
 import Preloader from "../preloader";
 import Select from "react-select";
-import Pagination from "../Pagination";
 
 const Income = () => {
   const [incomes, setIncomes] = useState([]);
@@ -31,11 +30,12 @@ const Income = () => {
     description: "",
   });
   const [editing, setEditing] = useState(false);
+  const navigate = useNavigate();
   const filterRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -64,7 +64,7 @@ const Income = () => {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8080/api/incomeCategories"
+        "http://localhost:8080/api/financeCategories"
       );
       setCategories([
         { value: "ALL", label: "All Categories" },
@@ -115,6 +115,10 @@ const Income = () => {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleView = (income) => {
+    navigate(`/income/${income.id}/view`);
   };
 
   const handleEdit = (income) => {
@@ -227,10 +231,10 @@ const Income = () => {
   const filterIncomes = (income) => {
     const matchesSearch = searchQuery
       ? income.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      income.invoiceNumber
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      income.categoryName?.toLowerCase().includes(searchQuery.toLowerCase())
+        income.invoiceNumber
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        income.categoryName?.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
 
     return matchesSearch;
@@ -307,16 +311,11 @@ const Income = () => {
       <ToastContainer />
       <div className="doctor-nav-buttons">
         <div className="nav_headings">
-
-          <Link to="/income-categories" className="doctor-nav-btn ">
-            <span className="btn-text">Income Category</span>
+          <Link to="/finance-categories" className="doctor-nav-btn">
+            <span className="btn-text">Finance Category</span>
           </Link>
           <Link to="/income" className="doctor-nav-btn active">
             <span className="btn-text">Income</span>
-          </Link>
-
-          <Link to="/expenses-categories" className="doctor-nav-btn">
-            <span className="btn-text">Expenses Category</span>
           </Link>
           <Link to="/expenses" className="doctor-nav-btn">
             <span className="btn-text">Expenses</span>
@@ -332,7 +331,7 @@ const Income = () => {
           <input
             type="text"
             className="form-control"
-            placeholder="Search"
+            placeholder="Search by Name or Invoice"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -490,15 +489,133 @@ const Income = () => {
           </tbody>
         </table>
 
-
+        <div className="d-flex justify-content-between align-items-center mt-5">
+          <div>
+            Showing {indexOfFirstItem + 1} to{" "}
+            {Math.min(indexOfLastItem, filteredIncomes.length)} of{" "}
+            {filteredIncomes.length} results
+          </div>
+          <nav>
+            <ul className="pagination">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  <ArrowBackIosIcon />
+                </button>
+              </li>
+              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(1)}
+                  style={{
+                    height: "42px",
+                    borderRadius: "10px",
+                    boxShadow: "none",
+                    border: "none",
+                  }}
+                >
+                  1
+                </button>
+              </li>
+              {currentPage > 4 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (number) =>
+                    number > 1 &&
+                    number < totalPages &&
+                    Math.abs(number - currentPage) <= 2
+                )
+                .map((number) => (
+                  <li
+                    key={number}
+                    className={`page-item ${
+                      currentPage === number ? "active" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage(number)}
+                      style={{
+                        height: "42px",
+                        borderRadius: "10px",
+                        boxShadow: "none",
+                        border: "none",
+                      }}
+                    >
+                      {number}
+                    </button>
+                  </li>
+                ))}
+              {currentPage < totalPages - 3 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {totalPages > 1 && (
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(totalPages)}
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    {totalPages}
+                  </button>
+                </li>
+              )}
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  <ArrowForwardIosIcon />
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
+
       {/* Add/Edit Income Modal */}
       <div
         className="modal fade document_modal"

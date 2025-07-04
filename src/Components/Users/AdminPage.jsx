@@ -304,7 +304,7 @@ const Admins = () => {
 
                   <td>
                     <span
-                      className={`badges ${
+                      className={`badge ${
                         admin.status === "Active"
                           ? "bg-light-success"
                           : "bg-light-danger"

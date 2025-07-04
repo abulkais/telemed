@@ -329,7 +329,7 @@ const LabTechnicians = () => {
 
                   <td>
                     <span
-                      className={`badges ${
+                      className={`badge ${
                         technician.status === "Active"
                           ? "bg-light-success"
                           : "bg-light-danger"

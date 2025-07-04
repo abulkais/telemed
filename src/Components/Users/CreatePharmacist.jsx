@@ -498,7 +498,7 @@ const CreatePharmacist = () => {
                         {pharmacistData.firstName && pharmacistData.lastName ? (
                           `${pharmacistData.firstName[0]}${pharmacistData.lastName[0]}`
                         ) : (
-                          <i className="fa fa-upload"></i>
+                          <i className="fa fa-pencil"></i>
                         )}
                       </div>
                     )}

@@ -5,11 +5,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import * as XLSX from "xlsx";
 import removeIcon from "../../assets/images/remove.png";
 import Preloader from "../preloader";
 import Select from "react-select";
-import Pagination from "../Pagination";
 
 const Expenses = () => {
   const [expenses, setExpenses] = useState([]);
@@ -29,11 +30,12 @@ const Expenses = () => {
     description: "",
   });
   const [editing, setEditing] = useState(false);
+  const navigate = useNavigate();
   const filterRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -61,7 +63,7 @@ const Expenses = () => {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8080/api/expensesCategories"
+        "http://localhost:8080/api/financeCategories"
       );
       setCategories([
         { value: "ALL", label: "All Categories" },
@@ -116,6 +118,9 @@ const Expenses = () => {
     }
   };
 
+  const handleView = (expense) => {
+    navigate(`/expense/${expense.id}/view`);
+  };
 
   const handleEdit = (expense) => {
     setEditing(true);
@@ -208,7 +213,7 @@ const Expenses = () => {
       );
       toast.error(
         "Error saving expense: " +
-        (error.response?.data?.error || error.message)
+          (error.response?.data?.error || error.message)
       );
     } finally {
       setIsSaving(false);
@@ -232,13 +237,14 @@ const Expenses = () => {
   const filterExpenses = (expense) => {
     const matchesSearch = searchQuery
       ? expense.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      String(expense.invoiceNumber || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      expense.categoryName?.toLowerCase().includes(searchQuery.toLowerCase())
+        expense.invoiceNumber
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        expense.categoryName?.toLowerCase().includes(searchQuery.toLowerCase())
       : true;
 
     return matchesSearch;
   };
-
 
   const filteredExpenses = expenses.filter(filterExpenses);
 
@@ -314,16 +320,11 @@ const Expenses = () => {
       <ToastContainer />
       <div className="doctor-nav-buttons">
         <div className="nav_headings">
-
-          <Link to="/income-categories" className="doctor-nav-btn ">
-            <span className="btn-text">Income Category</span>
+          <Link to="/finance-categories" className="doctor-nav-btn">
+            <span className="btn-text">Finance Category</span>
           </Link>
           <Link to="/income" className="doctor-nav-btn">
             <span className="btn-text">Income</span>
-          </Link>
-
-          <Link to="/expenses-categories" className="doctor-nav-btn">
-            <span className="btn-text">Expenses Category</span>
           </Link>
           <Link to="/expenses" className="doctor-nav-btn active">
             <span className="btn-text">Expenses</span>
@@ -430,13 +431,7 @@ const Expenses = () => {
             </tr>
           </thead>
           <tbody>
-            {expenses.length === 0 ? (
-              <tr>
-                <td colSpan="6">
-                  <Preloader />
-                </td>
-              </tr>
-            ) : currentItems.length > 0 ? (
+            {currentItems.length > 0 ? (
               currentItems.map((expense, index) => (
                 <tr key={expense.id}>
                   <td>{indexOfFirstItem + index + 1}</td>
@@ -496,15 +491,139 @@ const Expenses = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="text-center">
-                  Data not found
+                <td colSpan="8">
+                  <Preloader />
                 </td>
               </tr>
             )}
           </tbody>
         </table>
 
-
+        <div className="d-flex justify-content-between align-items-center mt-5">
+          <div>
+            Showing {indexOfFirstItem + 1} to{" "}
+            {Math.min(indexOfLastItem, filteredExpenses.length)} of{" "}
+            {filteredExpenses.length} results
+          </div>
+          <nav>
+            <ul className="pagination">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  <ArrowBackIosIcon />
+                </button>
+              </li>
+              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(1)}
+                  style={{
+                    height: "42px",
+                    borderRadius: "10px",
+                    boxShadow: "none",
+                    border: "none",
+                  }}
+                >
+                  1
+                </button>
+              </li>
+              {currentPage > 4 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (number) =>
+                    number > 1 &&
+                    number < totalPages &&
+                    Math.abs(number - currentPage) <= 2
+                )
+                .map((number) => (
+                  <li
+                    key={number}
+                    className={`page-item ${
+                      currentPage === number ? "active" : ""
+                    }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage(number)}
+                      style={{
+                        height: "42px",
+                        borderRadius: "10px",
+                        boxShadow: "none",
+                        border: "none",
+                      }}
+                    >
+                      {number}
+                    </button>
+                  </li>
+                ))}
+              {currentPage < totalPages - 3 && (
+                <li className="page-item disabled">
+                  <span
+                    className="page-link"
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    ...
+                  </span>
+                </li>
+              )}
+              {totalPages > 1 && (
+                <li
+                  className={`page-item ${
+                    currentPage === totalPages ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(totalPages)}
+                    style={{
+                      height: "42px",
+                      borderRadius: "10px",
+                      boxShadow: "none",
+                      border: "none",
+                    }}
+                  >
+                    {totalPages}
+                  </button>
+                </li>
+              )}
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  <ArrowForwardIosIcon />
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
 
       {/* Add/Edit Expense Modal */}
@@ -680,13 +799,7 @@ const Expenses = () => {
           </div>
         </div>
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
+
       {/* Delete Expense Modal */}
       <div
         className="modal fade"

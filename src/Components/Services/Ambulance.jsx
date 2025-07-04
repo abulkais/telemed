@@ -542,7 +542,7 @@ const Ambulance = () => {
                 <td>{item.driverContact}</td>
                 <td>
                   <span
-                    className={`badges ${
+                    className={`badge ${
                       item.vehicleType === "Owned"
                         ? "bg-light-success"
                         : "bg-light-info"
@@ -553,7 +553,7 @@ const Ambulance = () => {
                 </td>
                 <td>
                   <span
-                    className={`badges ${
+                    className={`badge ${
                       item.isAvailable ? "bg-light-success" : "bg-light-danger"
                     }`}
                   >

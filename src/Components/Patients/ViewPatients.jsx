@@ -4,7 +4,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
-import moment from "moment";
+
 
 const ViewPatients = () => {
   const navigate = useNavigate();
@@ -31,8 +31,6 @@ const ViewPatients = () => {
     twitterUrl: "",
     instagramUrl: "",
     linkedinUrl: "",
-    created_at: "",
-    updated_at: "",
   });
 
   const fetchPatient = async () => {
@@ -60,8 +58,6 @@ const ViewPatients = () => {
         twitterUrl: patient.twitterUrl || "",
         instagramUrl: patient.instagramUrl || "",
         linkedinUrl: patient.linkedinUrl || "",
-        created_at: patient.created_at,
-        updated_at: patient.updated_at,
       });
     } catch (error) {
       console.error("Error fetching patient:", error);
@@ -80,10 +76,6 @@ const ViewPatients = () => {
     if (id) fetchPatient();
   }, [id]);
 
-  const getTimeAgo = (date) => {
-    return moment(date).fromNow();
-  };
-
   return (
     <div className="container-fluid">
       <ToastContainer />
@@ -99,126 +91,81 @@ const ViewPatients = () => {
             </button>
           </div>
 
-          <div className="card p-4 border-0 mb-4">
-            <div className="d-flex align-items-center">
-              <div className="profile-picture-container ">
-                {patientData.profileImage ? (
-                  <img
-                    src={`${patientData.profileImage}`}
-                    alt={`${patientData.firstName} ${patientData.lastName}`}
-                    className="profile-picture"
-                  />
-                ) : (
-                  <div className="empty-profile text-white d-flex align-items-center justify-content-center">
-                    {patientData.firstName?.charAt(0)?.toUpperCase() || ""}
-                    {patientData.lastName?.charAt(0)?.toUpperCase() || ""}
-                  </div>
-                )}
-              </div>
-              <div className="ml-3">
-                <h5 className="mb-0">
+          <div className="card p-4 border-0">
+            <div className="form-row">
+              <div className="form-group col-md-4">
+                <label>Ptients Name:</label>
+                <p>
                   {patientData.firstName} {patientData.lastName}
-                </h5>
-                <p className="text-muted mb-0">{patientData.email}</p>
+                </p>
+              </div>
+
+              <div className="form-group col-md-4">
+                <label>Email:</label>
+                <p>{patientData.email}</p>
+              </div>
+              <div className="form-group col-md-4">
+                <label>Date Of Birth:</label>
+                <p>{formatDate(patientData.dateOfBirth)}</p>
               </div>
             </div>
-          </div>
-
-          <div className="card p-4 border-0 mb-4">
-            <div className="row">
-              <div className=" col-md-4">
-                <label class="fs-5 text-gray-600">Date Of Birth:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {formatDate(patientData.dateOfBirth)}
-                </p>
+            <div className="form-row">
+              <div className="form-group col-md-4">
+                <label>Phone:</label>
+                <p>{`${patientData.phoneCountryCode} ${patientData.phoneNumber}`}</p>
+              </div>
+              <div className="form-group col-md-4">
+                <label>Gender:</label>
+                <p>{patientData.gender}</p>
+              </div>
+              <div className="form-group col-md-4">
+                <label>Status:</label>
+                <p>{patientData.status ? "Active" : "Inactive"}</p>
               </div>
 
-              <div className=" col-md-4">
-                <label class="fs-5 text-gray-600">Phone:</label>
-                <p className=" fs-5 text-gray-800 showSpan">{`${patientData.phoneCountryCode} ${patientData.phoneNumber}`}</p>
-              </div>
-              <div className=" col-md-4">
-                <label class="fs-5 text-gray-600">Gender:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {patientData.gender}
-                </p>
-              </div>
-              <div className=" col-md-4">
-                <label class="fs-5 text-gray-600">Status:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {patientData.status ? "Active" : "Inactive"}
-                </p>
-              </div>
-
-              <div className=" col-md-4">
-                <label class="fs-5 text-gray-600">Blood Group:</label>
+              <div className="form-group col-md-4">
+                <label>Blood Group:</label>
                 <span className="badge fs-6 bg-light-success"></span>
-                <p className=" fs-5 text-gray-800 showSpan">
+                <p>
                   <span className="badge fs-6 bg-light-success">
                     {patientData.bloodGroup || "N/A"}
                   </span>
                 </p>
               </div>
 
-              <div className=" col-md-4">
-                <label class="fs-5 text-gray-600">UHID:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {patientData.uhid}
-                </p>
-              </div>
-
-              <div className="col-md-4">
-                <label class="fs-5 text-gray-600">Created At:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {getTimeAgo(patientData.created_at)}
-                </p>
-              </div>
-
-              <div className=" col-md-4">
-                <label class="fs-5 text-gray-600">Updated At:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {getTimeAgo(patientData.updated_at)}
-                </p>
+              <div className="form-group col-md-4">
+                <label>UHID:</label>
+                <p>{patientData.uhid}</p>
               </div>
             </div>
-          </div>
-          <div className="card p-4 border-0 mb-4">
-            <h6 className="mt-2">Address Details</h6>
-            <div className="row">
-              <div className=" col-md-6">
-                <label class="fs-5 text-gray-600">Address 1:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {patientData.address1 || "N/A"}
-                </p>
-              </div>
-              <div className=" col-md-6">
-                <label class="fs-5 text-gray-600">Address 2:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {patientData.address2 || "N/A"}
-                </p>
-              </div>
-
-              <div className=" col-md-6">
-                <label class="fs-5 text-gray-600">City:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {patientData.city || "N/A"}
-                </p>
-              </div>
-              <div className=" col-md-6">
-                <label class="fs-5 text-gray-600">Zipcode:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
-                  {patientData.zipcode || "N/A"}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="card p-4 border-0 mb-4">
-            <h6 className="mt-2">Social Details</h6>
+            <h6 className="mt-4">Address Details</h6>
             <div className="form-row">
-              <div className=" col-md-6">
-                <label class="fs-5 text-gray-600">Facebook URL:</label>
+              <div className="form-group col-md-6">
+                <label>Address 1:</label>
+                <p>{patientData.address1 || "N/A"}</p>
+              </div>
+              <div className="form-group col-md-6">
+                <label>Address 2:</label>
+                <p>{patientData.address2 || "N/A"}</p>
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group col-md-6">
+                <label>City:</label>
+                <p>{patientData.city || "N/A"}</p>
+              </div>
+              <div className="form-group col-md-6">
+                <label>Zipcode:</label>
+                <p>{patientData.zipcode || "N/A"}</p>
+              </div>
+            </div>
 
-                <p className=" fs-5 text-gray-800 showSpan">
+            <h6 className="mt-4">Social Details</h6>
+            <div className="form-row">
+              <div className="form-group col-md-6">
+                <label>Facebook URL:</label>
+
+                <p>
                   {patientData.facebookUrl &&
                   patientData.facebookUrl.length > 0 ? (
                     <a
@@ -233,9 +180,9 @@ const ViewPatients = () => {
                   )}
                 </p>
               </div>
-              <div className=" col-md-6">
-                <label class="fs-5 text-gray-600">Twitter URL:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+              <div className="form-group col-md-6">
+                <label>Twitter URL:</label>
+                <p>
                   {patientData.twitterUrl &&
                   patientData.twitterUrl.length > 0 ? (
                     <a
@@ -252,9 +199,9 @@ const ViewPatients = () => {
               </div>
             </div>
             <div className="form-row">
-              <div className=" col-md-6">
-                <label class="fs-5 text-gray-600">Instagram URL:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+              <div className="form-group col-md-6">
+                <label>Instagram URL:</label>
+                <p>
                   {patientData.instagramUrl &&
                   patientData.instagramUrl.length > 0 ? (
                     <a
@@ -269,9 +216,9 @@ const ViewPatients = () => {
                   )}
                 </p>
               </div>
-              <div className=" col-md-6">
-                <label class="fs-5 text-gray-600">LinkedIn URL:</label>
-                <p className=" fs-5 text-gray-800 showSpan">
+              <div className="form-group col-md-6">
+                <label>LinkedIn URL:</label>
+                <p>
                   {patientData.linkedinUrl &&
                   patientData.linkedinUrl.length > 0 ? (
                     <a

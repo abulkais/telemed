@@ -38,33 +38,18 @@ const CreatePatientAdmission = () => {
 
   const fetchData = async () => {
     try {
-      const [patientsRes, doctorsRes, packagesRes, insurancesRes, bedsRes] =
-        await Promise.all([
-          axios.get("http://localhost:8080/api/getPatientsbyStatus"),
-          axios.get("http://localhost:8080/api/getDoctorsByStatus"),
-          axios.get("http://localhost:8080/api/packages"),
-          axios.get("http://localhost:8080/api/getInsurancesByStatus"),
-          axios.get("http://localhost:8080/api/beds"),
-        ]);
-      setPatients(
-        patientsRes.data.map((p) => ({
-          value: p.id,
-          label: `${p.firstName} ${p.lastName}`,
-        }))
-      );
-      setDoctors(
-        doctorsRes.data.map((d) => ({
-          value: d.id,
-          label: `${d.firstName} ${d.lastName}`,
-        }))
-      );
-      setPackages(
-        packagesRes.data.map((p) => ({ value: p.id, label: p.packageName }))
-      );
-      setInsurances(
-        insurancesRes.data.map((i) => ({ value: i.id, label: i.insuranceName }))
-      );
-      setBeds(bedsRes.data.map((b) => ({ value: b.id, label: b.name })));
+      const [patientsRes, doctorsRes, packagesRes, insurancesRes, bedsRes] = await Promise.all([
+        axios.get("http://localhost:8080/api/getPatientsbyStatus"),
+        axios.get("http://localhost:8080/api/getDoctorsByStatus"),
+        axios.get("http://localhost:8080/api/packages"),
+        axios.get("http://localhost:8080/api/getInsurancesByStatus"),
+        axios.get("http://localhost:8080/api/beds"),
+      ]);
+      setPatients(patientsRes.data.map(p => ({ value: p.id, label: `${p.firstName} ${p.lastName}` })));
+      setDoctors(doctorsRes.data.map(d => ({ value: d.id, label: `${d.firstName} ${d.lastName}` })));
+      setPackages(packagesRes.data.map(p => ({ value: p.id, label: p.packageName })));
+      setInsurances(insurancesRes.data.map(i => ({ value: i.id, label: i.insuranceName })));
+      setBeds(bedsRes.data.map(b => ({ value: b.id, label: b.name })));
     } catch (error) {
       console.error("Error fetching data:", error);
       toast.error("Failed to load data");
@@ -73,40 +58,15 @@ const CreatePatientAdmission = () => {
 
   const fetchAdmission = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/patient-admissions/${id}`
-      );
+      const res = await axios.get(`http://localhost:8080/api/patient-admissions/${id}`);
       const admission = res.data;
-      const formatDate = (date) => {
-        if (!date) return "";
-        const d = new Date(date);
-        const offset = d.getTimezoneOffset();
-        const localDate = new Date(d.getTime() - offset * 60000);
-        return localDate.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
-      };
-
       setAdmissionData({
-        patientId: {
-          value: admission.patientId,
-          label: `${admission.patient.firstName} ${admission.patient.lastName}`,
-        },
-        doctorId: {
-          value: admission.doctorId,
-          label: `${admission.doctor.firstName} ${admission.doctor.lastName}`,
-        },
-        admissionDate: formatDate(admission.admissionDate),
-        packageId: admission.packageId
-          ? { value: admission.packageId, label: admission.package.packageName }
-          : null,
-        insuranceId: admission.insuranceId
-          ? {
-              value: admission.insuranceId,
-              label: admission.insurance.insuranceName,
-            }
-          : null,
-        bedId: admission.bedId
-          ? { value: admission.bedId, label: admission.bed.name }
-          : null,
+        patientId: { value: admission.patientId, label: `${admission.patient.firstName} ${admission.patient.lastName}` },
+        doctorId: { value: admission.doctorId, label: `${admission.doctor.firstName} ${admission.doctor.lastName}` },
+        admissionDate: new Date(admission.admissionDate).toISOString().split("T")[0],
+        packageId: admission.packageId ? { value: admission.packageId, label: admission.package.packageName } : null,
+        insuranceId: admission.insuranceId ? { value: admission.insuranceId, label: admission.insurance.insuranceName } : null,
+        bedId: admission.bedId ? { value: admission.bedId, label: admission.bed.name } : null,
         policyNo: admission.policyNo || "",
         agentName: admission.agentName || "",
         guardianName: admission.guardianName || "",
@@ -174,16 +134,10 @@ const CreatePatientAdmission = () => {
 
     try {
       if (isEditMode) {
-        await axios.put(
-          `http://localhost:8080/api/patient-admissions/${id}`,
-          admissionToSave
-        );
+        await axios.put(`http://localhost:8080/api/patient-admissions/${id}`, admissionToSave);
         toast.success("Admission updated successfully");
       } else {
-        await axios.post(
-          `http://localhost:8080/api/patient-admissions`,
-          admissionToSave
-        );
+        await axios.post(`http://localhost:8080/api/patient-admissions`, admissionToSave);
         toast.success("Admission added successfully");
         setAdmissionData({
           patientId: null,
@@ -207,10 +161,7 @@ const CreatePatientAdmission = () => {
       }, 2000);
     } catch (error) {
       console.error("Submission error:", error.response || error);
-      toast.error(
-        "Error saving admission: " +
-          (error.response?.data?.error || error.message)
-      );
+      toast.error("Error saving admission: " + (error.response?.data?.error || error.message));
     }
   };
 
@@ -220,13 +171,8 @@ const CreatePatientAdmission = () => {
       <div className="row">
         <div className="col-lg-12">
           <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            <h1 className="h4">
-              {isEditMode ? "Edit Admission" : "New Patient Admission"}
-            </h1>
-            <button
-              className="btn btn-primary px-4"
-              onClick={() => navigate("/patient-admissions")}
-            >
+            <h1 className="h4">{isEditMode ? "Edit Admission" : "New Patient Admission"}</h1>
+            <button className="btn btn-primary px-4" onClick={() => navigate("/patient-admissions")}>
               Back
             </button>
           </div>
@@ -234,9 +180,7 @@ const CreatePatientAdmission = () => {
           <div className="card p-4 border-0">
             <div className="row">
               <div className="form-group col-md-4">
-                <label>
-                  Patient: <span className="text-danger">*</span>
-                </label>
+                <label>Patient: <span className="text-danger">*</span></label>
                 <Select
                   options={patients}
                   value={admissionData.patientId}
@@ -245,9 +189,7 @@ const CreatePatientAdmission = () => {
                 />
               </div>
               <div className="form-group col-md-4">
-                <label>
-                  Doctor: <span className="text-danger">*</span>
-                </label>
+                <label>Doctor: <span className="text-danger">*</span></label>
                 <Select
                   options={doctors}
                   value={admissionData.doctorId}
@@ -256,9 +198,7 @@ const CreatePatientAdmission = () => {
                 />
               </div>
               <div className="form-group col-md-4">
-                <label>
-                  Admission Date: <span className="text-danger">*</span>
-                </label>
+                <label>Admission Date: <span className="text-danger">*</span></label>
                 <input
                   type="datetime-local"
                   name="admissionDate"
@@ -282,9 +222,7 @@ const CreatePatientAdmission = () => {
                 <Select
                   options={insurances}
                   value={admissionData.insuranceId}
-                  onChange={(option) =>
-                    handleSelectChange("insuranceId", option)
-                  }
+                  onChange={(option) => handleSelectChange("insuranceId", option)}
                   placeholder="Choose Insurance"
                   isClearable
                 />
@@ -350,10 +288,7 @@ const CreatePatientAdmission = () => {
                     country={"id"}
                     value={admissionData.countryCode}
                     onChange={(code) =>
-                      setAdmissionData((prev) => ({
-                        ...prev,
-                        countryCode: `+${code}`,
-                      }))
+                      setAdmissionData((prev) => ({ ...prev, countryCode: `+${code}` }))
                     }
                     inputClass="form-control"
                     containerStyle={{ width: "13%" }}
@@ -370,10 +305,7 @@ const CreatePatientAdmission = () => {
                     className="form-control"
                     onChange={(e) => {
                       const contact = e.target.value.replace(/[^0-9]/g, "");
-                      setAdmissionData((prev) => ({
-                        ...prev,
-                        guardianContact: contact,
-                      }));
+                      setAdmissionData((prev) => ({ ...prev, guardianContact: contact }));
                     }}
                     style={{ width: "81%" }}
                   />

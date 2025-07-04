@@ -12,7 +12,6 @@ import { jsPDF } from "jspdf";
 import Preloader from "../preloader";
 import logo from "../../assets/images/logo.png";
 import "../../assets/Patients.css";
-import Pagination from "../Pagination";
 
 const PatientSmartCards = () => {
   const [smartCards, setSmartCards] = useState([]);
@@ -24,11 +23,9 @@ const PatientSmartCards = () => {
   const [updateCard, setUpdateCard] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10); // Default to 10
+  const navigate = useNavigate();
   const smartCardRef = useRef(null);
   const baseurl = "http://localhost:8080";
-  const [loading, setLoading] = useState(true);
 
   const fetchSmartCards = async () => {
     try {
@@ -39,9 +36,6 @@ const PatientSmartCards = () => {
     } catch (error) {
       console.error("Error fetching smart cards:", error);
       toast.error("Failed to load smart cards");
-
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -132,7 +126,7 @@ const PatientSmartCards = () => {
   };
 
 
-
+  
   const downloadPDF = (patient) => {
     if (!patient || !smartCardRef.current) return;
 
@@ -204,20 +198,12 @@ const PatientSmartCards = () => {
       card.patientUniqueId?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredSmartCards.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
-  const totalPages = Math.ceil(filteredSmartCards.length / itemsPerPage);
   return (
     <div>
       <ToastContainer />
       <div className="doctor-nav-buttons">
         <div className="nav_headings">
-
+        
           <Link to="/patient-smart-cards" className="doctor-nav-btn active">
             <span className="btn-text">Patient Smart Cards</span>
           </Link>
@@ -262,14 +248,8 @@ const PatientSmartCards = () => {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7">
-                  <Preloader />
-                </td>
-              </tr>
-            ) : currentItems.length > 0 ? (
-              currentItems.map((card, index) => (
+            {filteredSmartCards.length > 0 ? (
+              filteredSmartCards.map((card, index) => (
                 <tr key={card.id}>
                   <td>{index + 1}</td>
                   <td>
@@ -278,12 +258,25 @@ const PatientSmartCards = () => {
                         <img
                           src={`${baseurl}${card.profileImage}`}
                           alt={`${card.firstName} ${card.lastName}`}
-                          className="rounded-circle-profile"
+                          className="rounded-circle"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            backgroundColor: card.smartCardColor || "#1976d2",
+                            marginRight: "10px",
+                            fontSize: "20px",
+                          }}
                         />
                       ) : (
                         <div
-                          className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center"
-                          style={{ backgroundColor: card.smartCardColor }}
+                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            backgroundColor: card.smartCardColor || "#1976d2",
+                            marginRight: "10px",
+                            fontSize: "20px",
+                          }}
                         >
                           {card.firstName?.charAt(0)?.toUpperCase() || ""}
                           {card.lastName?.charAt(0)?.toUpperCase() || ""}
@@ -297,11 +290,7 @@ const PatientSmartCards = () => {
                       </div>
                     </div>
                   </td>
-                  <td>
-                    <span className="badges bg-light-info">
-                      {card.patientUniqueId}
-                    </span>
-                  </td>
+                  <td>{card.patientUniqueId}</td>
                   <td>
                     <div
                       className="d-flex justify-center items-center"
@@ -330,8 +319,8 @@ const PatientSmartCards = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7">
-                  <p className="text-center">No data found.</p>
+                <td colSpan="3">
+                  <Preloader />
                 </td>
               </tr>
             )}
@@ -339,15 +328,7 @@ const PatientSmartCards = () => {
         </table>
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setCurrentPage={setCurrentPage}
-        setItemsPerPage={setItemsPerPage}
-      />
-
-
+      {/* Combined Create/Update Smart Card Modal */}
       <div
         className="modal fade"
         id="smartCardModal"

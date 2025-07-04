@@ -9,7 +9,6 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Link } from "react-router-dom";
 import moment from "moment";
-import delteImage from "../../assets/images/remove.png"
 
 const Medicines = () => {
   const [medicinesData, setMedicinesData] = useState([]);
@@ -842,8 +841,8 @@ const Medicines = () => {
           <div className="modal-content text-center">
             <span className="modal-icon">
               <img
-                src={delteImage}
-                alt="delete image"
+                src="https://hms.infyom.com/assets/images/remove.png"
+                alt=""
               />
             </span>
             <h2>Delete</h2>

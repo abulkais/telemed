@@ -181,18 +181,28 @@ const PathologyUnits = () => {
 
   const filteredPathologyUnits = pathologyUnits.filter(filterBySearch);
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    const dateObj = new Date(dateString);
+    const day = dateObj.getDate();
+    const month = months[dateObj.getMonth()];
+    const year = dateObj.getFullYear();
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+    return `${day} ${month}, ${year} ${hours}:${minutes}`;
   };
 
   return (
@@ -225,20 +235,19 @@ const PathologyUnits = () => {
         </div>
       </div>
 
-      <div className="filter-bar-container">
-        <div className="filter-search-box">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search"
-            style={{ width: "250px" }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search by Unit Name"
+          style={{ width: "250px" }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
         <div className="d-flex justify-content-between align-items-center">
           <button
-            className="filter-btn filter-btn-primary mr-2"
+            className="btn btn-primary ml-2"
             data-toggle="modal"
             data-target="#addPathologyUnit"
             onClick={resetForm}
@@ -247,7 +256,7 @@ const PathologyUnits = () => {
           </button>
 
           <button
-            className="btn btn-success"
+            className="btn btn-success ml-2"
             onClick={downloadExcel}
             disabled={excelLoading}
           >
@@ -281,7 +290,6 @@ const PathologyUnits = () => {
                 <td>{item.description ? item.description : "N/A"}</td>
                 <td>
                   <span className="badges bg-light-info">
-                    {formatTime(item.created_at)} <br />
                     {formatDate(item.created_at)}
                   </span>
                 </td>
