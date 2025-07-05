@@ -256,8 +256,8 @@ const Beds = () => {
           <Link to="/bed-status" className="doctor-nav-btn">
             <span className="btn-text">Bed Status</span>
           </Link>
-          <Link to="/bed-assignments" className="doctor-nav-btn">
-            <span className="btn-text">Bed Assignments</span>
+          <Link to="/bed-assigns" className="doctor-nav-btn">
+            <span className="btn-text">Bed Assigns</span>
           </Link>
           <Link to="/beds" className="doctor-nav-btn active">
             <span className="btn-text">Beds</span>

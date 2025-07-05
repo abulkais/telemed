@@ -60,7 +60,6 @@ const Patients = () => {
     };
   }, [showFilter]);
 
- 
   const deletePatient = async () => {
     if (!deleteId) {
       toast.error("Invalid Patient ID!");
@@ -68,7 +67,7 @@ const Patients = () => {
     }
 
     setIsDeleting(true); // Start loading
-  
+
     try {
       await axios.delete(`http://localhost:8080/api/patients/${deleteId}`);
       setPatients((prev) => prev.filter((item) => item.id !== deleteId));
@@ -266,7 +265,7 @@ const Patients = () => {
               <th>Patients</th>
               <th>Phone</th>
               <th>Gender</th>
-            
+
               <th>Blood Group</th>
               <th>Status</th>
               <th>Action</th>
@@ -283,25 +282,10 @@ const Patients = () => {
                         <img
                           src={patient.profileImage}
                           alt={`${patient.firstName} ${patient.lastName}`}
-                          className="rounded-circle"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            marginRight: "10px",
-                          }}
+                          className="rounded-circle-profile"
                         />
                       ) : (
-                        <div
-                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            backgroundColor: "#1976d2",
-                            marginRight: "10px",
-                            fontSize: "20px",
-                          }}
-                        >
+                        <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
                           {patient.firstName?.charAt(0)?.toUpperCase() || ""}
                           {patient.lastName?.charAt(0)?.toUpperCase() || ""}
                         </div>
@@ -318,7 +302,7 @@ const Patients = () => {
                     patient.phoneNumber
                   }`}</td>
                   <td>{patient.gender}</td>
-                 
+
                   <td>{patient.bloodGroup || "N/A"}</td>
                   <td>
                     <span
@@ -530,7 +514,6 @@ const Patients = () => {
                   </div>
                 ) : (
                   <span>Yes, Delete</span>
-
                 )}
               </button>
               <button

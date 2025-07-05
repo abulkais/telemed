@@ -9,7 +9,6 @@ import removeIcon from "../../assets/images/remove.png";
 import Preloader from "../preloader";
 import Select from "react-select";
 import Pagination from "../Pagination";
-import Switch from "@mui/material/Switch";
 
 const BedAssign = () => {
   const [bedAssignments, setBedAssignments] = useState([]);
@@ -30,7 +29,7 @@ const BedAssign = () => {
   const [editing, setEditing] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const filterRef = useRef(null);
-
+  const baseUrl = "http://localhost:8080";
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -72,14 +71,135 @@ const BedAssign = () => {
     }
   };
 
+  // const fetchBeds = async () => {
+  //   try {
+  //     const res = await axios.get(
+  //       "http://localhost:8080/api/bedAssignments/beds"
+  //     ); // Confirm this endpoint
+  //     const bedsData = res.data.map((bed) => ({
+  //       value: bed.id,
+  //       label: bed.name,
+  //     })); // Ensure mapping
+  //     console.log("Fetched beds:", bedsData); // Debug log
+  //     setBeds(bedsData);
+  //   } catch (error) {
+  //     console.error("Error fetching beds:", error);
+  //     toast.error("Failed to load beds");
+  //   }
+  // };
+
   const fetchBeds = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/beds");
-      setBeds(res.data.map((bed) => ({ value: bed.id, label: bed.name })));
+      const res = await axios.get(
+        "http://localhost:8080/api/bedAssignments/beds"
+      ); // Confirm this endpoint
+      const bedsData = res.data.map((bed) => ({
+        value: bed.id,
+        label: bed.name,
+      })); // Ensure mapping
+      console.log("Fetched beds:", bedsData); // Debug log
+      setBeds(bedsData);
     } catch (error) {
       console.error("Error fetching beds:", error);
       toast.error("Failed to load beds");
     }
+  };
+
+  const handleSelectChange = async (name, selectedOption) => {
+    if (name === "ipdPatientId") {
+      setSelectedPatient(selectedOption);
+      setBedAssignmentData((prev) => ({
+        ...prev,
+        [name]: selectedOption.value,
+        ipdNo: "",
+        bedId: "",
+      }));
+      if (selectedOption) {
+        try {
+          const res = await axios.get(
+            `http://localhost:8080/api/bedAssignments/patients/${selectedOption.value}`
+          );
+          setBedAssignmentData((prev) => ({
+            ...prev,
+            ipdNo: res.data.ipdNo || "",
+          }));
+          // Auto-select bed after setting ipdNo
+          if (res.data.ipdNo && beds.length > 0) {
+            const availableBed = beds.find(
+              (b) =>
+                !bedAssignments.some((ba) => ba.bedId === b.value && ba.status)
+            );
+            if (availableBed) {
+              setBedAssignmentData((prev) => ({
+                ...prev,
+                bedId: availableBed.value,
+              }));
+            } else {
+              setBedAssignmentData((prev) => ({ ...prev, bedId: "" }));
+              toast.error(
+                "No available beds. Please check bed assignments or add new beds."
+              );
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching IPD No:", error);
+          toast.error("Failed to load IPD No");
+        }
+      }
+    } else if (name === "bedId") {
+      setBedAssignmentData((prev) => ({
+        ...prev,
+        [name]: selectedOption.value,
+      }));
+    }
+  };
+
+  const handleIpdNoChange = (e) => {
+    const { value } = e.target;
+    setBedAssignmentData((prev) => ({ ...prev, ipdNo: value }));
+    if (value && beds.length > 0) {
+      // Auto-select the first available bed
+      const availableBed = beds.find(
+        (b) => !bedAssignments.some((ba) => ba.bedId === b.value && ba.status)
+      );
+      if (availableBed) {
+        setBedAssignmentData((prev) => ({
+          ...prev,
+          bedId: availableBed.value,
+        }));
+      } else {
+        setBedAssignmentData((prev) => ({ ...prev, bedId: "" }));
+        toast.error(
+          "No available beds. Please check bed assignments or add new beds."
+        );
+      }
+    }
+  };
+
+  const validateForm = () => {
+    if (
+      !bedAssignmentData.ipdPatientId ||
+      !bedAssignmentData.ipdNo ||
+      !bedAssignmentData.assignDate
+    ) {
+      toast.error("All fields are required!");
+      return false;
+    }
+    if (!bedAssignmentData.bedId) {
+      toast.error("Bed is required!");
+      return false;
+    }
+    const isDuplicate = bedAssignments.some(
+      (item) =>
+        item.ipdPatientId === bedAssignmentData.ipdPatientId &&
+        item.bedId === bedAssignmentData.bedId &&
+        (!editing || item.id !== bedAssignmentData.id)
+    );
+    if (isDuplicate) {
+      toast.error("This bed is already assigned to the selected patient.");
+      return false;
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -145,82 +265,117 @@ const BedAssign = () => {
     setBedAssignmentData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = async (name, selectedOption) => {
-    if (name === "ipdPatientId") {
-      setSelectedPatient(selectedOption);
-      setBedAssignmentData((prev) => ({
-        ...prev,
-        [name]: selectedOption.value,
-        ipdNo: "",
-        bedId: "",
-      }));
-      if (selectedOption) {
-        try {
-          const res = await axios.get(
-            `http://localhost:8080/api/bedAssignments/patients/${selectedOption.value}`
-          );
-          setBedAssignmentData((prev) => ({
-            ...prev,
-            ipdNo: res.data.ipdNo || "",
-          }));
-        } catch (error) {
-          console.error("Error fetching IPD No:", error);
-          toast.error("Failed to load IPD No");
-          
-        }
-      }
-    }
-  };
+  // const handleSelectChange = async (name, selectedOption) => {
+  //   if (name === "ipdPatientId") {
+  //     setSelectedPatient(selectedOption);
+  //     setBedAssignmentData((prev) => ({
+  //       ...prev,
+  //       [name]: selectedOption.value,
+  //       ipdNo: "",
+  //       bedId: "",
+  //     }));
+  //     if (selectedOption) {
+  //       try {
+  //         const res = await axios.get(
+  //           `http://localhost:8080/api/bedAssignments/patients/${selectedOption.value}`
+  //         );
+  //         setBedAssignmentData((prev) => ({
+  //           ...prev,
+  //           ipdNo: res.data.ipdNo || "",
+  //         }));
+  //       } catch (error) {
+  //         console.error("Error fetching IPD No:", error);
+  //         toast.error("Failed to load IPD No");
+  //       }
+  //     }
+  //   }
+  // };
 
-  const handleIpdNoChange = (e) => {
-    const { value } = e.target;
-    setBedAssignmentData((prev) => ({ ...prev, ipdNo: value }));
-    if (value) {
-      // Auto-select the first available bed
-      const availableBed = beds.find(
-        (b) => !bedAssignments.some((ba) => ba.bedId === b.value && ba.status)
-      );
-      if (availableBed) {
-        setBedAssignmentData((prev) => ({
-          ...prev,
-          bedId: availableBed.value,
-        }));
-      }
-    }
-  };
+  // const handleIpdNoChange = (e) => {
+  //   const { value } = e.target;
+  //   setBedAssignmentData((prev) => ({ ...prev, ipdNo: value }));
+  //   if (value) {
+  //     // Auto-select the first available bed
+  //     const availableBed = beds.find(
+  //       (b) => !bedAssignments.some((ba) => ba.bedId === b.value && ba.status)
+  //     );
+  //     if (availableBed) {
+  //       setBedAssignmentData((prev) => ({
+  //         ...prev,
+  //         bedId: availableBed.value,
+  //       }));
+  //     }
+  //   }
+  // };
 
   const handleStatusChange = (e) => {
     setBedAssignmentData((prev) => ({ ...prev, status: e.target.checked }));
   };
 
-  const validateForm = () => {
-    if (
-      !bedAssignmentData.ipdPatientId ||
-      !bedAssignmentData.ipdNo ||
-      !bedAssignmentData.assignDate
-    ) {
-      toast.error("All fields are required!");
-      return false;
-    }
-    if (!bedAssignmentData.bedId) {
-      toast.error("Bed is required!");
-      return false;
-    }
-    const isDuplicate = bedAssignments.some(
-      (item) =>
-        item.ipdPatientId === bedAssignmentData.ipdPatientId &&
-        item.bedId === bedAssignmentData.bedId &&
-        (!editing || item.id !== bedAssignmentData.id)
-    );
-    if (isDuplicate) {
-      toast.error("This bed is already assigned to the selected patient.");
-      return false;
-    }
-    return true;
-  };
+  // const validateForm = () => {
+  //   if (
+  //     !bedAssignmentData.ipdPatientId ||
+  //     !bedAssignmentData.ipdNo ||
+  //     !bedAssignmentData.assignDate
+  //   ) {
+  //     toast.error("All fields are required!");
+  //     return false;
+  //   }
+  //   // if (!bedAssignmentData.bedId) {
+  //   //   toast.error("Bed is required!");
+  //   //   return false;
+  //   // }
+  //   const isDuplicate = bedAssignments.some(
+  //     (item) =>
+  //       item.ipdPatientId === bedAssignmentData.ipdPatientId &&
+  //       item.bedId === bedAssignmentData.bedId &&
+  //       (!editing || item.id !== bedAssignmentData.id)
+  //   );
+  //   if (isDuplicate) {
+  //     toast.error("This bed is already assigned to the selected patient.");
+  //     return false;
+  //   }
+  //   return true;
+  // };
 
+  // const handleSaveBedAssignment = async (e) => {
+  //   e.preventDefault();
+  //   if (!validateForm()) return;
+
+  //   setIsSaving(true);
+  //   try {
+  //     if (editing) {
+  //       await axios.put(
+  //         `http://localhost:8080/api/bedAssignments/${bedAssignmentData.id}`,
+  //         bedAssignmentData
+  //       );
+  //       toast.success("Bed assignment updated successfully!");
+  //     } else {
+  //       await axios.post(
+  //         "http://localhost:8080/api/bedAssignments",
+  //         bedAssignmentData
+  //       );
+  //       toast.success("Bed assignment added successfully!");
+  //     }
+  //     fetchBedAssignments();
+  //     $("#addBedAssignmentModal").modal("hide");
+  //     resetForm();
+  //   } catch (error) {
+  //     console.error(
+  //       "Error saving bed assignment:",
+  //       error.response?.data || error.message
+  //     );
+  //     toast.error(
+  //       "Error saving bed assignment: " +
+  //         (error.response?.data?.error || error.message)
+  //     );
+  //   } finally {
+  //     setIsSaving(false);
+  //   }
+  // };
   const handleSaveBedAssignment = async (e) => {
     e.preventDefault();
+    console.log("Submitting bedAssignmentData:", bedAssignmentData); // Debug log
     if (!validateForm()) return;
 
     setIsSaving(true);
@@ -254,7 +409,6 @@ const BedAssign = () => {
       setIsSaving(false);
     }
   };
-
   const resetForm = () => {
     setBedAssignmentData({
       id: null,
@@ -374,13 +528,19 @@ const BedAssign = () => {
   return (
     <div>
       <ToastContainer />
-      <div className="doctor-nav-buttons">
+     <div className="doctor-nav-buttons">
         <div className="nav_headings">
+          <Link to="/bed-status" className="doctor-nav-btn">
+            <span className="btn-text">Bed Status</span>
+          </Link>
+          <Link to="/bed-assignments" className="doctor-nav-btn active">
+            <span className="btn-text">Bed Assigns</span>
+          </Link>
+          <Link to="/beds" className="doctor-nav-btn ">
+            <span className="btn-text">Beds</span>
+          </Link>
           <Link to="/bed-types" className="doctor-nav-btn">
             <span className="btn-text">Bed Types</span>
-          </Link>
-          <Link to="/bed-assign" className="doctor-nav-btn active">
-            <span className="btn-text">Bed Assign</span>
           </Link>
         </div>
       </div>
@@ -482,8 +642,33 @@ const BedAssign = () => {
             {currentItems.length > 0 ? (
               currentItems.map((assignment, index) => (
                 <tr key={assignment.id}>
-                  <td>{assignment.ipdNo || "N/A"}</td>
-                  <td>{assignment.patientName}</td>
+                  <td>
+                    <span className="badges bg-light-success">
+                      {" "}
+                      {assignment.ipdNo}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="d-flex align-items-center">
+                      {assignment.profileImage ? (
+                        <img
+                          src={`${baseUrl}${assignment.profileImage}`}
+                          alt={`${assignment.patientName}`}
+                          className="rounded-circle-profile"
+                        />
+                      ) : (
+                        <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
+                          {assignment.patientName?.charAt(0)?.toUpperCase()}
+                        </div>
+                      )}
+                      <div className="flex-wrap">
+                        <p className="mb-0" style={{ textAlign: "start" }}>
+                          {assignment.patientName}
+                        </p>
+                        <p className="mb-0">{assignment.email}</p>
+                      </div>
+                    </div>
+                  </td>
                   <td>{assignment.bedName}</td>
                   <td>
                     <span className="badges bg-light-info">
@@ -500,13 +685,18 @@ const BedAssign = () => {
                     )}
                   </td>
                   <td>
-                    <Switch
-                      checked={assignment.status}
-                      onChange={() =>
-                        handleStatusToggle(assignment.id, assignment.status)
-                      }
-                      color="primary"
-                    />
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        checked={assignment.status}
+                        onChange={() =>
+                          handleStatusToggle(assignment.id, assignment.status)
+                        }
+                      />
+                      <span className="slider round"></span>
+                    </label>
+
+                        
                   </td>
                   <td>
                     <div
@@ -615,16 +805,16 @@ const BedAssign = () => {
                         options={beds}
                         value={beds.find(
                           (b) => b.value === bedAssignmentData.bedId
-                        )}
+                        )} // Correct value binding
                         onChange={(selectedOption) =>
                           handleSelectChange("bedId", selectedOption)
                         }
                         placeholder="Choose Bed"
-                     
                         required
                       />
                     </div>
                   </div>
+
                   <div className="col-lg-6">
                     <div className="form-group">
                       <label>Assign Date:*</label>
@@ -652,12 +842,19 @@ const BedAssign = () => {
                   </div>
                   <div className="col-lg-6">
                     <div className="form-group">
-                      <label>Status:</label>
-                      <Switch
-                        checked={bedAssignmentData.status}
-                        onChange={handleStatusChange}
-                        color="primary"
-                      />
+                      <label>
+                        Status: <span className="text-danger">*</span>
+                      </label>
+                      <br />
+                      <label className="switch">
+                        <input
+                          type="checkbox"
+                          name="status"
+                          checked={bedAssignmentData.status}
+                          onChange={handleStatusChange}
+                        />
+                        <span className="slider round"></span>
+                      </label>
                     </div>
                   </div>
                 </div>

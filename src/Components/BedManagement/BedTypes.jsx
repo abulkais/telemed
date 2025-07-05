@@ -5,8 +5,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import * as XLSX from "xlsx";
+import { Link, useNavigate } from "react-router-dom";
 
-import { Link } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
@@ -29,7 +29,7 @@ const BedTypes = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -263,16 +263,23 @@ const BedTypes = () => {
     fetchBedTypesData();
   }, []);
 
+  const navigate = useNavigate(); // Ensure this is initialized
+
+  const handleView = (patient) => {
+    navigate(`/bed-types/${patient.id}`);
+  };
+
   return (
     <div>
       <ToastContainer />
 
-     
       <div className="doctor-nav-buttons">
         <div className="nav_headings">
           <Link
             to="/bed-status"
-            className={`doctor-nav-btn ${filter === "BedStatus" ? "active" : ""}`}
+            className={`doctor-nav-btn ${
+              filter === "BedStatus" ? "active" : ""
+            }`}
             onClick={() => setFilter("BedStatus")}
           >
             <span className="btn-text">Bed Status</span>
@@ -290,15 +297,12 @@ const BedTypes = () => {
 
           <Link
             to="/beds"
-            className={`doctor-nav-btn ${
-              filter === "Beds" ? "active" : ""
-            }`}
+            className={`doctor-nav-btn ${filter === "Beds" ? "active" : ""}`}
             onClick={() => setFilter("Beds")}
           >
             <span className="btn-text">Beds</span>
           </Link>
 
-        
           <Link
             to="/bed-types"
             className={`doctor-nav-btn ${
@@ -363,7 +367,13 @@ const BedTypes = () => {
               <tr key={index}>
                 <td>{indexOfFirstItem + index + 1}</td>
                 <td>
-                  <span className="badges bg-light-success">{type.name}</span>
+                  <span
+                    className="text-primary"
+                    onClick={() => handleView(type)}
+                    style={{ cursor: "pointer" }} // Optional: Adds pointer cursor to indicate clickability
+                  >
+                    {type.name}
+                  </span>
                 </td>
                 <td>{type.description ? type.description : "N/A"}</td>
                 <td>

@@ -101,7 +101,8 @@ import PaymentReports from "./Components/Billing/PaymentReports";
 import AdvancedPayments from "./Components/Billing/AdvancedPayments";
 import DeathReports from "./Components/Reports/DeathReports";
 import BirthReports from "./Components/Reports/BirthReports";
-
+import BedAssign from "./Components/BedManagement/BedAssign";
+import BedTypeDetails from "./Components/BedManagement/BedTypeDetails";
 
 function App() {
   return (
@@ -130,7 +131,8 @@ function App() {
               <Route path="/doctors-breaks" element={<DoctorsBreaks />} />
 
               <Route path="/bed-types" element={<BedTypes />} />
-
+              <Route path="/bed-assigns" element={<BedAssign />} />
+              <Route path="/bed-types/:id" element={<BedTypeDetails />} />
               <Route
                 path="/medicnies-categories"
                 element={<MedicinesCategories />}
@@ -398,10 +400,7 @@ function App() {
 
               <Route path="/death-reports" element={<DeathReports />} />
               <Route path="/birth-reports" element={<BirthReports />} />
-
             </Routes>
-
-
           </div>
         </div>
       </Router>
