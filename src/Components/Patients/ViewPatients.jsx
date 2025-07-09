@@ -5,7 +5,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 
-
 const ViewPatients = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -91,25 +90,66 @@ const ViewPatients = () => {
             </button>
           </div>
 
-          <div className="card p-4 border-0">
-            <div className="form-row">
-              <div className="form-group col-md-4">
-                <label>Ptients Name:</label>
-                <p>
-                  {patientData.firstName} {patientData.lastName}
-                </p>
+          <div className="card p-4 border-0 mb-4">
+            <div className="d-flex align-items-center">
+              <div className="profile-picture-container ">
+                {patientData.profileImage ? (
+                  <img
+                    src={patientData.profileImage}
+                    alt={`${patientData.firstName} ${patientData.lastName}`}
+                    className="rounded-circle"
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      objectFit: "cover",
+                      marginBottom: "20px",
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="rounded-circle text-white d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      backgroundColor: "#1976d2",
+                      margin: "0 auto 20px",
+                      fontSize: "40px",
+                    }}
+                  >
+                    {patientData.firstName?.charAt(0)?.toUpperCase() || ""}
+                    {patientData.lastName?.charAt(0)?.toUpperCase() || ""}
+                  </div>
+                )}
               </div>
+              <div className="ml-3">
+                <div className="d-flex align-center">
+                  <h5 className="mb-0">
+                    {patientData.firstName} {patientData.lastName}
+                  </h5>
 
-              <div className="form-group col-md-4">
-                <label>Email:</label>
-                <p>{patientData.email}</p>
+                  <p
+                     className={`badges mb-1 ml-2 ${
+                      patientData.status
+                        ? "bg-light-success"
+                        : "bg-light-danger"
+                    }`}
+                  >
+                    {patientData.status ? "Active" : "Inactive"}
+                  </p>
+                </div>
+
+                <p className="text-muted mb-0">{patientData.email}</p>
               </div>
+            </div>
+          </div>
+
+          <div className="card p-4 border-0">
+            <div className="row">
               <div className="form-group col-md-4">
                 <label>Date Of Birth:</label>
                 <p>{formatDate(patientData.dateOfBirth)}</p>
               </div>
-            </div>
-            <div className="form-row">
+
               <div className="form-group col-md-4">
                 <label>Phone:</label>
                 <p>{`${patientData.phoneCountryCode} ${patientData.phoneNumber}`}</p>
@@ -117,10 +157,6 @@ const ViewPatients = () => {
               <div className="form-group col-md-4">
                 <label>Gender:</label>
                 <p>{patientData.gender}</p>
-              </div>
-              <div className="form-group col-md-4">
-                <label>Status:</label>
-                <p>{patientData.status ? "Active" : "Inactive"}</p>
               </div>
 
               <div className="form-group col-md-4">
@@ -139,7 +175,7 @@ const ViewPatients = () => {
               </div>
             </div>
             <h6 className="mt-4">Address Details</h6>
-            <div className="form-row">
+            <div className="row">
               <div className="form-group col-md-6">
                 <label>Address 1:</label>
                 <p>{patientData.address1 || "N/A"}</p>
@@ -148,8 +184,7 @@ const ViewPatients = () => {
                 <label>Address 2:</label>
                 <p>{patientData.address2 || "N/A"}</p>
               </div>
-            </div>
-            <div className="form-row">
+
               <div className="form-group col-md-6">
                 <label>City:</label>
                 <p>{patientData.city || "N/A"}</p>

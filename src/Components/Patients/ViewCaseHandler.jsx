@@ -4,7 +4,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
-
+import moment from "moment";
 const ViewCaseHandler = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -25,6 +25,19 @@ const ViewCaseHandler = () => {
   useEffect(() => {
     fetchCaseHandler();
   }, [id]);
+
+  const formatDate = (dateString) => {
+    const dateObj = new Date(dateString);
+    const day = dateObj.getDate();
+    const month = dateObj.toLocaleString("default", { month: "short" });
+    const year = dateObj.getFullYear();
+    return ` ${day} ${month}, ${year}`;
+  };
+
+  const getTimeAgo = (dateString) => {
+    const date = moment(dateString);
+    return date.fromNow();
+  };
 
   if (!caseHandler) {
     return (
@@ -59,7 +72,7 @@ const ViewCaseHandler = () => {
             </div>
           </div>
 
-          <div className="card p-4 border-0">
+          <div className="card p-4 border-0 mb-4">
             <div className="d-flex align-items-center">
               <div className="profile-picture-container ">
                 {caseHandler.profileImage ? (
@@ -76,122 +89,107 @@ const ViewCaseHandler = () => {
                 )}
               </div>
               <div className="ml-3">
-                <h5 className="mb-0">
-                  {caseHandler.firstName} {caseHandler.lastName}
-                </h5>
+                <div className="d-flex align-center">
+                  <h5 className="mb-0">
+                    {caseHandler.firstName} {caseHandler.lastName}
+                  </h5>
+
+                  <p
+                    className={`badges mb-1 ml-1 ${
+                      caseHandler.status
+                        ? "bg-light-success"
+                        : "bg-light-danger"
+                    }`}
+                  >
+                    {caseHandler.status ? "Active" : "Inactive"}
+                  </p>
+                </div>
                 <p className="text-muted mb-0">{caseHandler.email}</p>
               </div>
             </div>
+          </div>
+          <div className="card p-4 border-0 mb-4">
+            <div className="row">
+              <div className=" col-md-6 divide">
+                <label className="fs-5 text-gray-600">Designation:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.designation || "N/A"}
+                </p>
+              </div>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Date of Birth:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.dateOfBirth
+                    ? formatDate(caseHandler.dateOfBirth)
+                    : "N/A"}
+                </p>
+              </div>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Phone:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.phoneCountryCode || "+62"}{" "}
+                  {caseHandler.phoneNumber || "N/A"}
+                </p>
+              </div>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Gender:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.gender || "N/A"}
+                </p>
+              </div>
 
-            {/* <div className="col-md-8">
-                <div className="row">
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>First Name:</strong>
-                    </label>
-                    <p>{caseHandler.firstName || "N/A"}</p>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>Last Name:</strong>
-                    </label>
-                    <p>{caseHandler.lastName || "N/A"}</p>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>Email:</strong>
-                    </label>
-                    <p>{caseHandler.email || "N/A"}</p>
-                  </div>
-                  <div className="form-group col-md-6 divide">
-                    <label>
-                      <strong>Designation:</strong>
-                    </label>
-                    <p>{caseHandler.designation || "N/A"}</p>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>Date of Birth:</strong>
-                    </label>
-                    <p>
-                      {caseHandler.dateOfBirth
-                        ? new Date(caseHandler.dateOfBirth).toLocaleDateString()
-                        : "N/A"}
-                    </p>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>Phone:</strong>
-                    </label>
-                    <p>
-                      {caseHandler.phoneCountryCode || "+62"}{" "}
-                      {caseHandler.phoneNumber || "N/A"}
-                    </p>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>Gender:</strong>
-                    </label>
-                    <p>{caseHandler.gender || "N/A"}</p>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>Status:</strong>
-                    </label>
-                    <p>
-                      <span
-                        className={`badge ${
-                          caseHandler.status
-                            ? "bg-light-success"
-                            : "bg-light-danger"
-                        }`}
-                      >
-                        {caseHandler.status ? "Active" : "Inactive"}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>Blood Group:</strong>
-                    </label>
-                    <p>{caseHandler.bloodGroup || "N/A"}</p>
-                  </div>
-                  <div className="form-group col-md-6">
-                    <label>
-                      <strong>Qualification:</strong>
-                    </label>
-                    <p>{caseHandler.qualification || "N/A"}</p>
-                  </div>
-                </div>
-              </div> */}
-
-         
-            {/* <div className="row">
-              <div className="form-group col-md-6">
-                <label>
-                  <strong>Address 1:</strong>
-                </label>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Blood Group:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.bloodGroup || "N/A"}
+                </p>
+              </div>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Qualification:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.qualification || "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="card p-4 border-0">
+            <div className="row">
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Address 1:</label>
                 <p>{caseHandler.address1 || "N/A"}</p>
               </div>
-              <div className="form-group col-md-6">
-                <label>
-                  <strong>Address 2:</strong>
-                </label>
-                <p>{caseHandler.address2 || "N/A"}</p>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Address 2:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.address2 || "N/A"}
+                </p>
               </div>
-              <div className="form-group col-md-6">
-                <label>
-                  <strong>City:</strong>
-                </label>
-                <p>{caseHandler.city || "N/A"}</p>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">City:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.city || "N/A"}
+                </p>
               </div>
-              <div className="form-group col-md-6">
-                <label>
-                  <strong>Zipcode:</strong>
-                </label>
-                <p>{caseHandler.zipcode || "N/A"}</p>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Zipcode:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {caseHandler.zipcode || "N/A"}
+                </p>
               </div>
-            </div> */}
+
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Created At:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {getTimeAgo(caseHandler.created_at || "N/A")}
+                </p>
+              </div>
+              <div className=" col-md-6">
+                <label className="fs-5 text-gray-600">Updated At:</label>
+                <p className="fs-5 text-gray-800 showSpan">
+                  {getTimeAgo(caseHandler.updated_at || "N/A")}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

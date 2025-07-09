@@ -944,6 +944,15 @@ input {
   margin-right: 10px;
 }
 
+.rounded-circle-bgColor {
+  border-radius: 100%;
+  width: 50px;
+  height: 50px;
+  background-color: #1976d2;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
 /* Dashboard Card Styling */
 .dashboard-card {
   padding: 24px;

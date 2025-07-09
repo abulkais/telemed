@@ -5,11 +5,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
 import * as XLSX from "xlsx";
 import removeIcon from "../../assets/images/remove.png";
 import Preloader from "../preloader";
+import Pagination from "../Pagination";
 
 const PatientAdmissions = () => {
   const [admissions, setAdmissions] = useState([]);
@@ -21,7 +21,7 @@ const PatientAdmissions = () => {
   const filterRef = useRef(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchAdmissions = async () => {
@@ -199,7 +199,7 @@ const PatientAdmissions = () => {
 
       <div
         className="filter-bar-container"
-        style={{ display: "flex", alignItems: "center", gap: "10px" }}
+        
       >
         <div className="filter-search-box" style={{ flex: 1 }}>
           <input
@@ -285,9 +285,7 @@ const PatientAdmissions = () => {
               <th>Doctor</th>
               <th>Admission Date</th>
               <th>Discharge Date</th>
-              <th>Package</th>
-              <th>Insurance</th>
-              <th>Policy No</th>
+
               <th>Status</th>
               <th>Action</th>
             </tr>
@@ -406,9 +404,7 @@ const PatientAdmissions = () => {
                       ? new Date(admission.dischargeDate).toLocaleString()
                       : "N/A"}
                   </td>
-                  <td>{admission.package?.packageName || "N/A"}</td>
-                  <td>{admission.insurance?.insuranceName || "N/A"}</td>
-                  <td>{admission.policyNo || "N/A"}</td>
+
                   <td>
                     <span
                       className={`badge ${
@@ -452,134 +448,14 @@ const PatientAdmissions = () => {
             )}
           </tbody>
         </table>
-
-        <div className="d-flex justify-content-between align-items-center mt-5">
-          <div>
-            Showing {indexOfLastItem + 1} to{" "}
-            {Math.min(indexOfLastItem, filteredAdmissions.length)} of{" "}
-            {filteredAdmissions.length} results
-          </div>
-          <nav>
-            <ul className="pagination">
-              <li
-                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                >
-                  <ArrowBackIosIcon />
-                </button>
-              </li>
-              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(1)}
-                  style={{
-                    height: "42px",
-                    borderRadius: "10px",
-                    boxShadow: "none",
-                    border: "none",
-                  }}
-                >
-                  1
-                </button>
-              </li>
-              {currentPage > 4 && (
-                <li className="page-item disabled">
-                  <span
-                    className="page-link"
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    ...
-                  </span>
-                </li>
-              )}
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(
-                  (number) =>
-                    number > 1 &&
-                    number < totalPages &&
-                    Math.abs(number - currentPage) <= 2
-                )
-                .map((number) => (
-                  <li
-                    key={number}
-                    className={`page-item ${
-                      currentPage === number ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => setCurrentPage(number)}
-                      style={{
-                        height: "42px",
-                        borderRadius: "10px",
-                        boxShadow: "none",
-                        border: "none",
-                      }}
-                    >
-                      {number}
-                    </button>
-                  </li>
-                ))}
-              {currentPage < totalPages - 3 && (
-                <li className="page-item disabled">
-                  <span
-                    className="page-link"
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    ...
-                  </span>
-                </li>
-              )}
-              {totalPages > 1 && (
-                <li
-                  className={`page-item ${
-                    currentPage === totalPages ? "active" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => setCurrentPage(totalPages)}
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    {totalPages}
-                  </button>
-                </li>
-              )}
-              <li
-                className={`page-item ${
-                  currentPage === totalPages ? "disabled" : ""
-                }`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  <ArrowForwardIosIcon />
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
       </div>
-
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        setCurrentPage={setCurrentPage}
+        setItemsPerPage={setItemsPerPage}
+      />
       <div
         className="modal fade"
         id="deleteAdmission"

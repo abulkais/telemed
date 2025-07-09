@@ -6,9 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import * as XLSX from "xlsx";
 import { Link, useNavigate } from "react-router-dom";
-
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import Pagination from "../Pagination";
 
 const BedTypes = () => {
   const [bedTypesData, setBedTypesData] = useState([]);
@@ -265,8 +263,8 @@ const BedTypes = () => {
 
   const navigate = useNavigate(); // Ensure this is initialized
 
-  const handleView = (patient) => {
-    navigate(`/bed-types/${patient.id}`);
+  const handleView = (bedType) => {
+    navigate(`/bed-types/${bedType.id}`);
   };
 
   return (
@@ -357,7 +355,6 @@ const BedTypes = () => {
             <tr>
               <th>S.N</th>
               <th>Bed Type</th>
-              <th>Description</th>
               <th>Date & Time</th>
               <th>Action</th>
             </tr>
@@ -375,7 +372,6 @@ const BedTypes = () => {
                     {type.name}
                   </span>
                 </td>
-                <td>{type.description ? type.description : "N/A"}</td>
                 <td>
                   <div className="badges bg-light-info">
                     {formatDate(type.created_at)}
@@ -403,146 +399,14 @@ const BedTypes = () => {
             ))}
           </tbody>
         </table>
-
-        {/* Pagination controls */}
-        <div className="d-flex justify-content-between align-items-center mt-5">
-          <div>
-            Showing {indexOfFirstItem + 1} to{" "}
-            {Math.min(indexOfLastItem, filteredBedTypes.length)} of{" "}
-            {filteredBedTypes.length} results
-          </div>
-          <nav>
-            <ul className="pagination">
-              <li
-                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                >
-                  <ArrowBackIosIcon />
-                </button>
-              </li>
-
-              {/* Always show first page */}
-              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(1)}
-                  style={{
-                    height: "42px",
-                    borderRadius: "10px",
-                    boxShadow: "none",
-                    border: "none",
-                  }}
-                >
-                  1
-                </button>
-              </li>
-
-              {/* Show ellipsis if current page is far from start */}
-              {currentPage > 4 && (
-                <li className="page-item disabled">
-                  <span
-                    className="page-link"
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    ...
-                  </span>
-                </li>
-              )}
-
-              {/* Show pages around current page */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(
-                  (number) =>
-                    number > 1 &&
-                    number < totalPages &&
-                    Math.abs(number - currentPage) <= 2
-                )
-                .map((number) => (
-                  <li
-                    key={number}
-                    className={`page-item ${
-                      currentPage === number ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => setCurrentPage(number)}
-                      style={{
-                        height: "42px",
-                        borderRadius: "10px",
-                        boxShadow: "none",
-                        border: "none",
-                      }}
-                    >
-                      {number}
-                    </button>
-                  </li>
-                ))}
-
-              {/* Show ellipsis if current page is far from end */}
-              {currentPage < totalPages - 3 && (
-                <li className="page-item disabled">
-                  <span
-                    className="page-link"
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    ...
-                  </span>
-                </li>
-              )}
-
-              {/* Always show last page if there's more than 1 page */}
-              {totalPages > 1 && (
-                <li
-                  className={`page-item ${
-                    currentPage === totalPages ? "active" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => setCurrentPage(totalPages)}
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    {totalPages}
-                  </button>
-                </li>
-              )}
-
-              <li
-                className={`page-item ${
-                  currentPage === totalPages ? "disabled" : ""
-                }`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  <ArrowForwardIosIcon />
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
       </div>
-
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        setCurrentPage={setCurrentPage}
+        setItemsPerPage={setItemsPerPage}
+      />
       {/* Add/Edit Bed Type Modal */}
       <div
         className="modal fade document_modal"

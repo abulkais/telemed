@@ -172,7 +172,7 @@ const InventoriesItems = () => {
 
       <div
         className="filter-bar-container"
-        style={{ display: "flex", alignItems: "center", gap: "10px" }}
+        
       >
         <div className="filter-search-box" style={{ flex: 1 }}>
           <input

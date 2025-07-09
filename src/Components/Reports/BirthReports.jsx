@@ -39,7 +39,7 @@ const BirthReports = () => {
 
   const fetchCases = async () => {
     try {
-      const res = await axios.get(`${baseurl}/api/caseIdPatientsBirthReports`);
+      const res = await axios.get(`${baseurl}/api/BirthReports/caseIdPatientsBirthReports`);
       const caseOptions = res.data.map((item) => ({
         value: item.id,
         label: `${item.caseId}  ${item.patientName}`,
@@ -243,7 +243,7 @@ const BirthReports = () => {
 
       <div
         className="filter-bar-container"
-        style={{ display: "flex", alignItems: "center", gap: "10px" }}
+       
       >
         <div className="filter-search-box" style={{ flex: 1 }}>
           <input

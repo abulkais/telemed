@@ -8,9 +8,7 @@ import * as XLSX from "xlsx";
 import removeIcon from "../../assets/images/remove.png";
 import Preloader from "../preloader";
 import moment from "moment";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos"; // Reintroduce for pagination
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos"; // Reintroduce for pagination
-import CommonNav from "../CommonNav";
+import Pagination from "../Pagination";
 
 const Cases = () => {
   const [cases, setCases] = useState([]);
@@ -21,7 +19,7 @@ const Cases = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedCase, setSelectedCase] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // Add pagination state
-  const [itemsPerPage] = useState(10); // Add pagination state
+  const [itemsPerPage, setItemsPerPage] = useState(10); // Add pagination state
   const navigate = useNavigate();
   const filterRef = useRef(null);
   const baseUrl = "http://localhost:8080";
@@ -210,13 +208,13 @@ const Cases = () => {
       </div>
       <div
         className="filter-bar-container"
-        style={{ display: "flex", alignItems: "center", gap: "10px" }}
+        
       >
         <div className="filter-search-box" style={{ flex: 1 }}>
           <input
             type="text"
             className="form-control"
-            placeholder="Search by Case ID"
+            placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -320,25 +318,10 @@ const Cases = () => {
                         <img
                           src={`${baseUrl}${caseItem.profileImage}`}
                           alt={`${caseItem.patientFirstName} ${caseItem.patientLastName}`}
-                          className="rounded-circle"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            marginRight: "10px",
-                          }}
+                          className="rounded-circle-profile"
                         />
                       ) : (
-                        <div
-                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            backgroundColor: "#1976d2",
-                            marginRight: "10px",
-                            fontSize: "20px",
-                          }}
-                        >
+                        <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
                           {caseItem.patientFirstName
                             ?.charAt(0)
                             ?.toUpperCase() || ""}
@@ -362,25 +345,10 @@ const Cases = () => {
                         <img
                           src={`${baseUrl}${caseItem.doctorProfile}`}
                           alt={`${caseItem.doctorFirstName} ${caseItem.doctorLastName}`}
-                          className="rounded-circle"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            marginRight: "10px",
-                          }}
+                          className="rounded-circle-profile"
                         />
                       ) : (
-                        <div
-                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            backgroundColor: "#1976d2",
-                            marginRight: "10px",
-                            fontSize: "20px",
-                          }}
-                        >
+                        <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
                           {caseItem.doctorFirstName?.charAt(0)?.toUpperCase() ||
                             ""}
                           {caseItem.doctorLastName?.charAt(0)?.toUpperCase() ||
@@ -445,135 +413,14 @@ const Cases = () => {
             )}
           </tbody>
         </table>
-
-        {/* Add Pagination UI */}
-        <div className="d-flex justify-content-between align-items-center mt-5">
-          <div>
-            Showing {indexOfFirstItem + 1} to{" "}
-            {Math.min(indexOfLastItem, filteredCases.length)} of{" "}
-            {filteredCases.length} results
-          </div>
-          <nav>
-            <ul className="pagination">
-              <li
-                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                >
-                  <ArrowBackIosIcon />
-                </button>
-              </li>
-              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(1)}
-                  style={{
-                    height: "42px",
-                    borderRadius: "10px",
-                    boxShadow: "none",
-                    border: "none",
-                  }}
-                >
-                  1
-                </button>
-              </li>
-              {currentPage > 4 && (
-                <li className="page-item disabled">
-                  <span
-                    className="page-link"
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    ...
-                  </span>
-                </li>
-              )}
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(
-                  (number) =>
-                    number > 1 &&
-                    number < totalPages &&
-                    Math.abs(number - currentPage) <= 2
-                )
-                .map((number) => (
-                  <li
-                    key={number}
-                    className={`page-item ${
-                      currentPage === number ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => setCurrentPage(number)}
-                      style={{
-                        height: "42px",
-                        borderRadius: "10px",
-                        boxShadow: "none",
-                        border: "none",
-                      }}
-                    >
-                      {number}
-                    </button>
-                  </li>
-                ))}
-              {currentPage < totalPages - 3 && (
-                <li className="page-item disabled">
-                  <span
-                    className="page-link"
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    ...
-                  </span>
-                </li>
-              )}
-              {totalPages > 1 && (
-                <li
-                  className={`page-item ${
-                    currentPage === totalPages ? "active" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => setCurrentPage(totalPages)}
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    {totalPages}
-                  </button>
-                </li>
-              )}
-              <li
-                className={`page-item ${
-                  currentPage === totalPages ? "disabled" : ""
-                }`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  <ArrowForwardIosIcon />
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
       </div>
-
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        setCurrentPage={setCurrentPage}
+        setItemsPerPage={setItemsPerPage}
+      />
       <div
         className="modal fade"
         id="deleteCase"
@@ -730,7 +577,9 @@ const Cases = () => {
                     <p className="fs-5 text-gray-800 showSpan">
                       <span
                         className={`badge ${
-                          selectedCase.status ? "bg-light-success" : "bg-light-danger"
+                          selectedCase.status
+                            ? "bg-light-success"
+                            : "bg-light-danger"
                         }`}
                       >
                         {selectedCase.status ? "Active" : "Inactive"}

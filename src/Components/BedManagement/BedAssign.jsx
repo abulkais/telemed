@@ -528,7 +528,7 @@ const BedAssign = () => {
   return (
     <div>
       <ToastContainer />
-     <div className="doctor-nav-buttons">
+      <div className="doctor-nav-buttons">
         <div className="nav_headings">
           <Link to="/bed-status" className="doctor-nav-btn">
             <span className="btn-text">Bed Status</span>
@@ -547,7 +547,7 @@ const BedAssign = () => {
 
       <div
         className="filter-bar-container"
-        style={{ display: "flex", alignItems: "center", gap: "10px" }}
+        
       >
         <div className="filter-search-box" style={{ flex: 1 }}>
           <input
@@ -644,7 +644,6 @@ const BedAssign = () => {
                 <tr key={assignment.id}>
                   <td>
                     <span className="badges bg-light-success">
-                      {" "}
                       {assignment.ipdNo}
                     </span>
                   </td>
@@ -695,8 +694,6 @@ const BedAssign = () => {
                       />
                       <span className="slider round"></span>
                     </label>
-
-                        
                   </td>
                   <td>
                     <div

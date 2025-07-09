@@ -49,7 +49,7 @@ const BedTypeDetails = () => {
         // if (filteredBeds.length === 0 && bedTypeRes.data) {
         //   setError("No beds found for this bed type.");
         // } else {
-        //   setBeds(filteredBeds);
+          setBeds(filteredBeds);
         // }
       } catch (error) {
         console.error("Error fetching data:", error);

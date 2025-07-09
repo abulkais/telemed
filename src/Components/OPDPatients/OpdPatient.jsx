@@ -5,11 +5,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/Documents.css";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
 import * as XLSX from "xlsx";
 import removeIcon from "../../assets/images/remove.png";
 import Preloader from "../preloader";
+import Pagination from "../Pagination";
 
 const OpdPatients = () => {
   const [opdPatients, setOpdPatients] = useState([]);
@@ -17,7 +17,7 @@ const OpdPatients = () => {
   const [deleteId, setDeleteId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const navigate = useNavigate();
 
   const fetchOpdPatients = async () => {
@@ -131,10 +131,7 @@ const OpdPatients = () => {
         </div>
       </div>
 
-      <div
-        className="filter-bar-container"
-        style={{ display: "flex", alignItems: "center", gap: "10px" }}
-      >
+      <div className="filter-bar-container">
         <div className="filter-search-box" style={{ flex: 1 }}>
           <input
             type="text"
@@ -169,8 +166,7 @@ const OpdPatients = () => {
               <th>Patient</th>
               <th>Doctor</th>
               <th>Appointment Date</th>
-              <th>Standard Charge </th>
-              <th>Payment Mode</th>
+
               <th>Action</th>
             </tr>
           </thead>
@@ -192,25 +188,10 @@ const OpdPatients = () => {
                         <img
                           src={opd.patient.profileImage}
                           alt={`${opd.patient.firstName} ${opd.patient.lastName}`}
-                          className="rounded-circle"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            marginRight: "10px",
-                          }}
+                          className="rounded-circle-profile"
                         />
                       ) : (
-                        <div
-                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            backgroundColor: "#1976d2",
-                            marginRight: "10px",
-                            fontSize: "20px",
-                          }}
-                        >
+                        <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
                           {opd.patient?.firstName?.charAt(0)?.toUpperCase() ||
                             ""}
                           {opd.patient?.lastName?.charAt(0)?.toUpperCase() ||
@@ -231,25 +212,10 @@ const OpdPatients = () => {
                         <img
                           src={opd.doctor.imgUrl}
                           alt={`${opd.doctor.firstName} ${opd.doctor.lastName}`}
-                          className="rounded-circle"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            marginRight: "10px",
-                          }}
+                          className="rounded-circle-profile"
                         />
                       ) : (
-                        <div
-                          className="rounded-circle text-white d-flex align-items-center justify-content-center"
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            backgroundColor: "#1976d2",
-                            marginRight: "10px",
-                            fontSize: "20px",
-                          }}
-                        >
+                        <div className="rounded-circle-bgColor text-white d-flex align-items-center justify-content-center">
                           {opd.doctor?.firstName?.charAt(0)?.toUpperCase() ||
                             ""}
                           {opd.doctor?.lastName?.charAt(0)?.toUpperCase() || ""}
@@ -264,24 +230,13 @@ const OpdPatients = () => {
                     </div>
                   </td>
                   <td>
-                    
                     <span className="badges bg-light-info">
                       {formatTime(opd.visitDate)} <br />
                       {formatDate(opd.visitDate)}
                     </span>
-                 
                   </td>
 
-                  <td>
-                    <span className="badges bg-light-success">
-                      {opd.standardCharge}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="badges bg-light-info">
-                      {opd.paymentMode}
-                    </span>
-                  </td>
+                 
                   <td>
                     <div
                       className="d-flex justify-center items-center"
@@ -311,133 +266,14 @@ const OpdPatients = () => {
             )}
           </tbody>
         </table>
-
-        <div className="d-flex justify-content-between align-items-center mt-5">
-          <div>
-            Showing {indexOfFirstItem + 1} to{" "}
-            {Math.min(indexOfLastItem, filteredOpdPatients.length)} of{" "}
-            {filteredOpdPatients.length} results
-          </div>
-          <nav>
-            <ul className="pagination">
-              <li
-                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                >
-                  <ArrowBackIosIcon />
-                </button>
-              </li>
-              <li className={`page-item ${currentPage === 1 ? "active" : ""}`}>
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(1)}
-                  style={{
-                    height: "42px",
-                    borderRadius: "10px",
-                    boxShadow: "none",
-                    border: "none",
-                  }}
-                >
-                  1
-                </button>
-              </li>
-              {currentPage > 4 && (
-                <li className="page-item disabled">
-                  <span
-                    className="page-link"
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    ...
-                  </span>
-                </li>
-              )}
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(
-                  (number) =>
-                    number > 1 &&
-                    number < totalPages &&
-                    Math.abs(number - currentPage) <= 2
-                )
-                .map((number) => (
-                  <li
-                    key={number}
-                    className={`page-item ${
-                      currentPage === number ? "active" : ""
-                    }`}
-                  >
-                    <button
-                      className="page-link"
-                      onClick={() => setCurrentPage(number)}
-                      style={{
-                        height: "42px",
-                        borderRadius: "10px",
-                        boxShadow: "none",
-                        border: "none",
-                      }}
-                    >
-                      {number}
-                    </button>
-                  </li>
-                ))}
-              {currentPage < totalPages - 3 && (
-                <li className="page-item disabled">
-                  <span
-                    className="page-link"
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    ...
-                  </span>
-                </li>
-              )}
-              {totalPages > 1 && (
-                <li
-                  className={`page-item ${
-                    currentPage === totalPages ? "active" : ""
-                  }`}
-                >
-                  <button
-                    className="page-link"
-                    onClick={() => setCurrentPage(totalPages)}
-                    style={{
-                      height: "42px",
-                      borderRadius: "10px",
-                      boxShadow: "none",
-                      border: "none",
-                    }}
-                  >
-                    {totalPages}
-                  </button>
-                </li>
-              )}
-              <li
-                className={`page-item ${
-                  currentPage === totalPages ? "disabled" : ""
-                }`}
-              >
-                <button
-                  className="page-link"
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                >
-                  <ArrowForwardIosIcon />
-                </button>
-              </li>
-            </ul>
-          </nav>
-        </div>
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        setCurrentPage={setCurrentPage}
+        setItemsPerPage={setItemsPerPage}
+      />
 
       <div
         className="modal fade"
